@@ -2,377 +2,430 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Wisp OS</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Wisp OS is a free, lightweight Linux desktop for older computers. It runs Firefox and everyday apps on 1 GB of RAM.">
+<meta name="description" content="Wisp OS is a free, lightweight Linux desktop for older computers. Firefox, office apps and an App Store on 1 GB of RAM.">
 <link rel="icon" href="img/wisp.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=Schibsted+Grotesk:wght@600;800&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* Layout: a plain manual-style product page. One column of sections, each with a short heading,
-   a sentence of explanation and then the real thing (screenshot, steps, table). Colour is used
-   only for actions and for the numbered markers on the desktop map. */
+/* Layout: the page wears Wisp's own night wallpaper and dark UI, like the OS itself.
+   A laptop in the hero plays the real desktop; below it, screenshot carousels and a
+   clickable desktop map do the explaining. Sections are dense; colour = actions only. */
 :root {
-  --bg: #f4f5f7;
-  --surface: #ffffff;
-  --line: #dcdfe6;
-  --ink: #15171d;
-  --ink-2: #474d5c;
-  --ink-3: #6c7385;
-  --accent: #2f52c4;
-  --accent-ink: #ffffff;
-  --accent-soft: #e5eafa;
-  --warn-bg: #fff4e0;
-  --warn-line: #f0c674;
-  --warn-ink: #5c3d00;
-  --head: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --body: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  --wrap: 1080px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e1015; --surface: #161921; --line: #2a2f3c; --ink: #e9ebf1; --ink-2: #b1b7c6; --ink-3: #848ca0;
-    --accent: #8ab4ff; --accent-ink: #0d0f14; --accent-soft: #1b2440;
-    --warn-bg: #2a2110; --warn-line: #6b5420; --warn-ink: #f3d9a4;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0e1015; --surface: #161921; --line: #2a2f3c; --ink: #e9ebf1; --ink-2: #b1b7c6; --ink-3: #848ca0;
-  --accent: #8ab4ff; --accent-ink: #0d0f14; --accent-soft: #1b2440;
-  --warn-bg: #2a2110; --warn-line: #6b5420; --warn-ink: #f3d9a4;
   color-scheme: dark;
+  --bg: #0b0d13;
+  --panel: #12151d;
+  --panel-2: #181c26;
+  --line: #252a37;
+  --ink: #eceef4;
+  --ink-2: #aeb4c4;
+  --ink-3: #7b8297;
+  --accent: #8ab4ff;
+  --accent-ink: #0b0d13;
+  --pin: #ffd25e;
+  --warn: #f2b84b;
+  --head: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --wrap: 1200px;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 1.0625rem/1.65 var(--body); }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 1rem/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
 a { color: var(--accent); text-underline-offset: 3px; }
-a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
-h1, h2, h3 { font-family: var(--head); font-weight: 800; letter-spacing: -0.015em; line-height: 1.15; margin: 0; text-wrap: balance; }
-h2 { font-size: clamp(1.6rem, 3.4vw, 2.2rem); }
-h3 { font-size: 1.15rem; font-weight: 600; letter-spacing: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--head); margin: 0; letter-spacing: -0.02em; line-height: 1.1; text-wrap: balance; }
+h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); font-weight: 800; }
+h3 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 p { margin: 0; }
 img { display: block; max-width: 100%; height: auto; }
 .wrap { max-width: var(--wrap); margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
-.muted { color: var(--ink-2); }
-.small { font-size: 0.9rem; color: var(--ink-3); }
-kbd { font: 500 0.8em/1 var(--mono); background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 3px 6px; white-space: nowrap; color: var(--ink); }
+kbd { font: 500 0.78em/1 var(--mono); background: var(--panel-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 3px 6px; white-space: nowrap; color: var(--ink); }
 code { font: 500 0.88em var(--mono); }
+.label { font: 600 0.75rem/1 var(--body); text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); }
 
-/* buttons */
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 8px; font: 600 1rem/1 var(--body); text-decoration: none; border: 1px solid transparent; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 9px; font: 600 0.98rem/1 var(--body); text-decoration: none; border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
 .btn-primary { background: var(--accent); color: var(--accent-ink); }
-.btn-primary:hover { filter: brightness(1.08); }
-.btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
-.btn-secondary:hover { border-color: var(--ink-3); }
-.btn .size { font-weight: 400; opacity: .8; }
-.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn-primary:hover { background: #a6c6ff; }
+.btn-secondary { background: rgba(255,255,255,.06); color: var(--ink); border-color: rgba(255,255,255,.14); }
+.btn-secondary:hover { background: rgba(255,255,255,.1); }
+.btn small { font: 500 0.82rem/1 var(--body); opacity: .75; }
 
-/* header */
-.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); }
-.top .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font: 800 1.1rem/1 var(--head); }
-.brand img { width: 28px; height: 28px; }
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: rgba(11,13,19,.86); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 26px; height: 58px; }
+.brand { display: flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none; font: 800 1.08rem/1 var(--head); }
+.brand img { width: 26px; height: 26px; }
 .top nav { display: flex; gap: 22px; margin-left: auto; }
-.top nav a { color: var(--ink-2); text-decoration: none; font-size: 0.97rem; }
+.top nav a { color: var(--ink-2); text-decoration: none; font-size: 0.93rem; }
 .top nav a:hover { color: var(--ink); }
-.top .btn { padding: 9px 14px; font-size: 0.95rem; }
-
-/* sections */
-section { padding-block: clamp(56px, 8vw, 96px); border-bottom: 1px solid var(--line); }
-section:last-of-type { border-bottom: 0; }
-.head { display: grid; gap: 12px; max-width: 680px; margin-bottom: 36px; }
-.head p { color: var(--ink-2); font-size: 1.1rem; }
-.alt { background: var(--surface); }
+.top .btn { padding: 8px 14px; font-size: 0.9rem; }
 
 /* hero */
-.hero { padding-block: clamp(48px, 7vw, 80px) clamp(48px, 7vw, 80px); }
-.hero-text { display: grid; gap: 20px; max-width: 720px; }
-.hero h1 { font-size: clamp(2.3rem, 5.6vw, 3.8rem); }
-.hero .lede { font-size: 1.2rem; color: var(--ink-2); max-width: 60ch; }
-.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 0; margin: 4px 0 0; list-style: none; color: var(--ink-2); font-size: 0.97rem; }
-.facts li::before { content: "✓"; color: var(--accent); font-weight: 700; margin-right: 7px; }
-.shot { margin-top: 44px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #0b0d13; }
+.hero { position: relative; overflow: hidden; background: #0b0d13 url("img/night.svg") center / cover no-repeat; border-bottom: 1px solid var(--line); }
+.hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 120px; background: linear-gradient(transparent, var(--bg)); pointer-events: none; }
+.hero .wrap { position: relative; z-index: 1; }
+.hero .hero-main { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.25fr); gap: 48px; align-items: center; padding-block: 56px 40px; }
+.hero-text { display: grid; gap: 18px; }
+.hero h1 { font-size: clamp(2.4rem, 5vw, 3.9rem); font-weight: 800; }
+.hero .lede { color: var(--ink-2); font-size: 1.12rem; max-width: 46ch; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.hero .note { color: var(--ink-3); font-size: 0.88rem; }
 
-/* three points */
-.points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
-.points div { display: grid; gap: 8px; align-content: start; border-top: 3px solid var(--accent); padding-top: 18px; }
-.points p { color: var(--ink-2); }
+.laptop { position: relative; }
+.lid { background: #0a0b0f; border: 1px solid #2c303c; border-radius: 16px 16px 4px 4px; padding: 12px 12px 14px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.8); }
+.screen { position: relative; aspect-ratio: 16 / 10; border-radius: 4px; overflow: hidden; background: #000; }
+.screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
+.screen img.on { opacity: 1; }
+.base { height: 16px; margin: 0 -5%; background: #22252e; border: 1px solid #333846; border-top: 0; border-radius: 0 0 14px 14px; position: relative; }
+.base::before { content: ""; position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 18%; height: 6px; background: #161820; border-radius: 0 0 8px 8px; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 18px; }
+.chip { border: 1px solid var(--line); background: rgba(18,21,29,.8); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; font-size: 0.85rem; cursor: pointer; }
+.chip:hover { color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+
+.stats { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 12px; background: rgba(18,21,29,.85); margin-bottom: 8px; }
+.stats div { padding: 14px 18px; border-left: 1px solid var(--line); }
+.stats div:first-child { border-left: 0; }
+.stats b { display: block; font: 700 1.25rem/1.2 var(--head); }
+.stats span { color: var(--ink-3); font-size: 0.85rem; }
+
+/* sections */
+section { padding-block: 64px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 40px; margin-bottom: 26px; }
+.sec-head > div { display: grid; gap: 10px; max-width: 640px; }
+.sec-head p { color: var(--ink-2); }
+
+/* carousel */
+.carousel { position: relative; }
+.track { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; padding-bottom: 4px; }
+.track::-webkit-scrollbar { display: none; }
+.slide { flex: 0 0 auto; scroll-snap-align: start; margin: 0; display: grid; gap: 12px; align-content: start; }
+.big .slide { width: min(820px, 86%); }
+.slide img { border-radius: 10px; border: 1px solid var(--line); background: #000; }
+.big .slide img { aspect-ratio: 16 / 10; object-fit: cover; width: 100%; }
+.big .slide img.fit { object-fit: contain; }
+.slide figcaption { display: grid; gap: 3px; }
+.slide figcaption b { font: 700 1.05rem/1.3 var(--head); }
+.slide figcaption span { color: var(--ink-2); font-size: 0.95rem; max-width: 70ch; }
+.ctrl { display: flex; align-items: center; gap: 8px; }
+.arrow { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); cursor: pointer; display: grid; place-items: center; }
+.arrow:hover { background: var(--panel-2); }
+.arrow:disabled { opacity: .35; cursor: default; }
+.arrow svg { width: 18px; height: 18px; stroke: var(--ink); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dots { display: flex; gap: 6px; justify-content: center; margin-top: 16px; }
+.dots button { width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0; background: var(--line); cursor: pointer; }
+.dots button[aria-current="true"] { background: var(--accent); width: 22px; border-radius: 4px; }
 
 /* desktop map */
-.map { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #0b0d13; }
-.pin {
-  position: absolute; transform: translate(-50%, -50%);
-  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
-  background: #ffd25e; color: #1a1300; font: 700 0.95rem/1 var(--body);
-  border: 2px solid #1a1300; box-shadow: 0 0 0 3px rgba(255, 210, 94, .35);
-}
-.legend { list-style: none; padding: 0; margin: 28px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 36px; }
-.legend li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 14px; align-items: start; }
-.legend .num { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: #ffd25e; color: #1a1300; font: 700 0.95rem/1 var(--body); }
-.legend b { display: block; }
-.legend span.muted { display: block; font-size: 0.98rem; }
-.tip { margin-top: 28px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink-2); }
+.mapgrid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.map { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.pin { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #1a1300; background: var(--pin); color: #1a1300; font: 700 0.9rem/1 var(--body); cursor: pointer; display: grid; place-items: center; padding: 0; transition: transform .15s ease, box-shadow .15s ease; }
+.pin.on, .pin:hover { transform: translate(-50%, -50%) scale(1.18); box-shadow: 0 0 0 6px rgba(255, 210, 94, .35); }
+.parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.parts button { width: 100%; text-align: left; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; padding: 10px 12px; border-radius: 9px; border: 1px solid transparent; background: none; cursor: pointer; }
+.parts button:hover { background: var(--panel); }
+.parts button.on { background: var(--panel-2); border-color: var(--line); }
+.parts .n { width: 26px; height: 26px; border-radius: 50%; background: var(--pin); color: #1a1300; font: 700 0.82rem/26px var(--body); text-align: center; }
+.parts b { display: block; font-weight: 600; }
+.parts span.t { display: block; color: var(--ink-2); font-size: 0.9rem; line-height: 1.5; }
+.parts button:not(.on) span.t { display: none; }
+.hint { margin-top: 10px; color: var(--ink-3); font-size: 0.88rem; }
 
-/* first steps */
-.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 40px; counter-reset: step; }
-.steps > li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 36px; align-items: center; counter-increment: step; }
-.steps .txt { display: grid; gap: 10px; }
-.steps .txt h3::before { content: counter(step) ". "; color: var(--accent); }
-.steps .txt p { color: var(--ink-2); }
-.steps img { border: 1px solid var(--line); border-radius: 8px; }
-.path { font-size: 0.95rem; color: var(--ink-2); }
-.path b { color: var(--ink); font-weight: 600; }
+/* settings strip */
+.settings-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr); gap: 32px; align-items: start; }
+.pages { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.pages button { border: 1px solid var(--line); background: var(--panel); color: var(--ink-2); border-radius: 7px; padding: 5px 10px; font-size: 0.85rem; cursor: pointer; }
+.pages button:hover { color: var(--ink); }
+.pages button[aria-current="true"] { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.small .slide { width: min(560px, 82%); }
+.small .slide img { aspect-ratio: 948 / 716; object-fit: cover; width: 100%; }
 
-/* shortcuts */
-.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
-th, td { text-align: left; padding: 12px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
-tr:last-child td { border-bottom: 0; }
-th { font: 600 0.85rem/1.4 var(--body); color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; }
-td:first-child { white-space: nowrap; width: 38%; }
-
-/* memory */
-.mem { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: start; }
-.bar { display: flex; height: 40px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); background: var(--bg); }
-.bar .used { background: var(--accent); }
-.scale { display: flex; justify-content: space-between; font: 500 0.78rem var(--mono); color: var(--ink-3); margin-top: 8px; font-variant-numeric: tabular-nums; }
-.memlist { list-style: none; margin: 24px 0 0; padding: 0; }
-.memlist li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--line); }
-.memlist li span:last-child { font-family: var(--mono); font-size: 0.92rem; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.memlist .total { font-weight: 700; }
-.memlist .total span:last-child { color: var(--ink); }
-.compare { display: grid; gap: 16px; }
-.cmp header { display: flex; justify-content: space-between; gap: 12px; font-size: 0.98rem; }
-.cmp header span:last-child { font-family: var(--mono); font-size: 0.9rem; color: var(--ink-2); }
-.track { height: 10px; border-radius: 5px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; margin-top: 6px; }
-.track i { display: block; height: 100%; background: var(--ink-3); }
-.cmp.wisp .track i { background: var(--accent); }
-.cmp.wisp header span:first-child { font-weight: 700; }
+/* memory + features */
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 12px; align-content: start; }
+.tile p { color: var(--ink-2); font-size: 0.95rem; }
+.tile.wide { grid-column: span 2; }
+.big-num { font: 800 2.6rem/1 var(--head); }
+.big-num small { font: 500 1rem var(--body); color: var(--ink-3); }
+.bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--panel-2); border: 1px solid var(--line); }
+.bar i { background: var(--accent); }
+.rows { list-style: none; margin: 0; padding: 0; font-size: 0.92rem; }
+.rows li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+.rows li:last-child { border-bottom: 0; }
+.rows li span:last-child { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); white-space: nowrap; }
+.cmp { display: grid; gap: 10px; }
+.cmp div { display: grid; grid-template-columns: 110px minmax(0, 1fr) 70px; gap: 10px; align-items: center; font-size: 0.88rem; color: var(--ink-2); }
+.cmp i { height: 8px; border-radius: 4px; background: var(--ink-3); display: block; }
+.cmp .w i { background: var(--accent); }
+.cmp .w { color: var(--ink); font-weight: 600; }
+.cmp div span:last-child { font-family: var(--mono); font-size: 0.8rem; text-align: right; }
+.tile img { border-radius: 8px; border: 1px solid var(--line); }
+.apps { display: flex; flex-wrap: wrap; gap: 6px; }
+.apps span { font-size: 0.85rem; padding: 4px 9px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); color: var(--ink-2); }
+.swatches { display: flex; gap: 8px; }
+.swatches img { width: 20%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; }
 
 /* install */
-.install { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 48px; align-items: start; }
-.howto { list-style: none; padding: 0; margin: 0; display: grid; gap: 22px; counter-reset: s; }
-.howto li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 14px; counter-increment: s; }
-.howto li::before { content: counter(s); width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--accent); color: var(--accent); font: 700 1rem/1 var(--body); }
-.howto b { display: block; margin-bottom: 2px; }
-.howto p { color: var(--ink-2); }
-.warn { margin-top: 28px; padding: 16px 18px; border-radius: 8px; background: var(--warn-bg); border: 1px solid var(--warn-line); color: var(--warn-ink); }
-.warn b { display: block; margin-bottom: 4px; }
-.side { display: grid; gap: 22px; padding: 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-.side h3 { font-size: 1.05rem; }
-.side ul { margin: 6px 0 0; padding-left: 20px; color: var(--ink-2); }
-.side li { margin: 4px 0; }
-.hash { font: 500 0.75rem/1.5 var(--mono); color: var(--ink-3); word-break: break-all; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+.install-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; counter-reset: s; list-style: none; padding: 0; margin: 0; }
+.install-steps li { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 8px; align-content: start; counter-increment: s; }
+.install-steps li::before { content: counter(s); width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font: 700 0.95rem/30px var(--body); text-align: center; }
+.install-steps p { color: var(--ink-2); font-size: 0.93rem; }
+.warn { margin-top: 14px; display: flex; gap: 12px; align-items: start; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(242,184,75,.45); background: rgba(242,184,75,.08); color: #f6dcae; font-size: 0.95rem; }
+.warn svg { flex: none; width: 20px; height: 20px; stroke: var(--warn); fill: none; stroke-width: 2; margin-top: 2px; }
+.getbox { margin-top: 14px; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+.getbox ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 0.92rem; }
+.getbox .hash { font: 500 0.72rem/1.5 var(--mono); color: var(--ink-3); word-break: break-all; }
+.getbox h3 { font-size: 0.95rem; margin-bottom: 4px; }
 
-/* faq */
-.faq { max-width: 780px; border-top: 1px solid var(--line); }
-.faq details { border-bottom: 1px solid var(--line); }
-.faq summary { cursor: pointer; list-style: none; padding: 18px 36px 18px 0; position: relative; font: 600 1.08rem/1.4 var(--body); }
+/* shortcuts + faq */
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 32px; align-items: start; }
+.keys { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.keys div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 0.92rem; align-items: center; }
+.keys div:last-child { border-bottom: 0; }
+.keys span { color: var(--ink-2); }
+.faq details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; }
+.faq summary { cursor: pointer; list-style: none; padding: 14px 44px 14px 16px; position: relative; font-weight: 600; }
 .faq summary::-webkit-details-marker { display: none; }
-.faq summary::after { content: "+"; position: absolute; right: 4px; top: 14px; font: 400 1.5rem/1 var(--body); color: var(--ink-3); }
-.faq details[open] summary::after { content: "–"; }
-.faq details > div { padding: 0 0 20px; color: var(--ink-2); display: grid; gap: 10px; max-width: 68ch; }
+.faq summary::after { content: ""; position: absolute; right: 18px; top: 50%; width: 8px; height: 8px; border-right: 2px solid var(--ink-3); border-bottom: 2px solid var(--ink-3); transform: translateY(-70%) rotate(45deg); transition: transform .2s; }
+.faq details[open] summary::after { transform: translateY(-30%) rotate(-135deg); }
+.faq details > p { padding: 0 16px 16px; color: var(--ink-2); font-size: 0.95rem; }
 
-footer { padding-block: 36px 52px; color: var(--ink-3); font-size: 0.95rem; border-top: 1px solid var(--line); }
-footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
-footer .brand { font-size: 1rem; }
-footer .links { display: flex; gap: 20px; margin-left: auto; }
+footer { border-top: 1px solid var(--line); padding-block: 26px 40px; color: var(--ink-3); font-size: 0.9rem; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; }
+footer .links { margin-left: auto; display: flex; gap: 18px; }
 
-@media (max-width: 860px) {
+@media (max-width: 980px) {
+  .hero .hero-main { grid-template-columns: minmax(0, 1fr); padding-block: 40px 32px; }
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stats div:nth-child(4) { border-left: 0; }
+  .stats div:nth-child(n+4) { border-top: 1px solid var(--line); }
+  .mapgrid, .settings-grid, .two { grid-template-columns: minmax(0, 1fr); }
+  .tiles { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .tile.wide { grid-column: span 2; }
+  .install-steps { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .getbox { grid-template-columns: minmax(0, 1fr); }
   .top nav { display: none; }
   .top .btn { margin-left: auto; }
-  .points, .mem, .install { grid-template-columns: minmax(0, 1fr); }
-  .steps > li { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  .legend { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 560px) {
-  .pin { width: 20px; height: 20px; font-size: 0.7rem; border-width: 1.5px; box-shadow: none; }
-  td:first-child { white-space: normal; }
+@media (max-width: 600px) {
+  section { padding-block: 48px; }
+  .stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .stats div { border-left: 0 !important; border-top: 1px solid var(--line); }
+  .stats div:nth-child(-n+2) { border-top: 0; }
+  .stats div:nth-child(even) { border-left: 1px solid var(--line) !important; }
+  .stats div:last-child { grid-column: span 2; }
+  .tiles, .install-steps { grid-template-columns: minmax(0, 1fr); }
+  .tile.wide { grid-column: auto; }
+  .pin { width: 20px; height: 20px; font-size: 0.68rem; border-width: 1.5px; }
+  .big .slide, .small .slide { width: 88%; }
+  .ctrl { display: none; }
   footer .links { margin-left: 0; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: reduce) {
+  html, .track { scroll-behavior: auto; }
+  .screen img { transition: none; }
+}
 </style>
 
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#top"><img src="img/wisp.svg" alt="">Wisp OS</a>
     <nav aria-label="Sections">
+      <a href="#tour">Tour</a>
       <a href="#around">Using Wisp</a>
-      <a href="#first-steps">First steps</a>
+      <a href="#settings">Settings</a>
       <a href="#install">Install</a>
-      <a href="#faq">Questions</a>
+      <a href="#faq">FAQ</a>
     </nav>
     <a class="btn btn-primary" href="#install">Download</a>
   </div>
 </header>
 
 <main id="top">
-  <section class="hero">
-    <div class="wrap">
+  <div class="hero">
+    <div class="wrap hero-main">
       <div class="hero-text">
-        <h1>Make an old laptop useful again.</h1>
-        <p class="lede">Wisp OS is a free operating system for older computers. It replaces a slow Windows with a clean, modern desktop that runs Firefox, documents and music on as little as 1&nbsp;GB of memory.</p>
+        <span class="label">Free Linux for older computers</span>
+        <h1>Your old laptop, fast again.</h1>
+        <p class="lede">Wisp OS swaps a slow, outdated system for a clean modern desktop. Firefox, documents, music and an App Store, all on 1&nbsp;GB of memory.</p>
         <div class="actions">
-          <a class="btn btn-primary" href="https://github.com/vetonfetai/wispos/releases/download/v0.1/wisp-os-0.1-x86_64.iso">Download Wisp OS <span class="size">902 MB</span></a>
-          <a class="btn btn-secondary" href="#install">How to install</a>
+          <a class="btn btn-primary" href="https://github.com/vetonfetai/wispos/releases/download/v0.1/wisp-os-0.1-x86_64.iso">Download <small>v0.1 · 902 MB</small></a>
+          <a class="btn btn-secondary" href="#tour">Take the tour</a>
         </div>
-        <ul class="facts">
-          <li>Free, no account needed</li>
-          <li>Uses 167 MB of memory when idle</li>
-          <li>Try it from a USB stick first</li>
+        <p class="note">Runs from a USB stick first, so you can try it without changing anything.</p>
+      </div>
+      <div>
+        <div class="laptop">
+          <div class="lid"><div class="screen" id="screen" aria-live="polite">
+            <img class="on" src="img/desktop.jpg" width="1280" height="800" alt="The Wisp desktop with a calculator open">
+            <img src="img/welcome.jpg" width="1280" height="800" alt="The Welcome window on first start" loading="lazy">
+            <img src="img/launcher.jpg" width="1280" height="800" alt="Searching for an app" loading="lazy">
+            <img src="img/settings.jpg" width="1280" height="800" alt="The Settings app, Appearance page" loading="lazy">
+            <img src="img/app-store.jpg" width="1280" height="800" alt="The App Store in the light style" loading="lazy">
+            <img src="img/taskmanager.jpg" width="1280" height="800" alt="The Task Manager listing running apps" loading="lazy">
+          </div></div>
+          <div class="base"></div>
+        </div>
+        <div class="chips" id="chips">
+          <button class="chip" aria-pressed="true">Desktop</button>
+          <button class="chip" aria-pressed="false">Welcome</button>
+          <button class="chip" aria-pressed="false">App search</button>
+          <button class="chip" aria-pressed="false">Settings</button>
+          <button class="chip" aria-pressed="false">App Store</button>
+          <button class="chip" aria-pressed="false">Task Manager</button>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="stats">
+        <div><b>167 MB</b><span>memory at idle</span></div>
+        <div><b>1 GB</b><span>RAM is enough</span></div>
+        <div><b>Free</b><span>no account, no ads</span></div>
+        <div><b>BIOS + UEFI</b><span>old and new PCs</span></div>
+        <div><b>Auto updates</b><span>one button</span></div>
+      </div>
+    </div>
+  </div>
+
+  <section id="tour">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label">Tour</span>
+          <h2>A closer look</h2>
+          <p>Real screenshots from Wisp OS 0.1. Swipe or use the arrows.</p>
+        </div>
+        <div class="ctrl"><button class="arrow" data-dir="-1" aria-label="Previous screenshot"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button><button class="arrow" data-dir="1" aria-label="Next screenshot"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>
+      </div>
+      <div class="carousel big" data-carousel>
+        <div class="track">
+          <figure class="slide"><img src="img/desktop.jpg" width="1280" height="800" alt="Wisp desktop" loading="lazy"><figcaption><b>The desktop</b><span>Apps button bottom-left, open windows along the taskbar, Wi-Fi, sound and power bottom-right. A clock with the weather sits in the corner.</span></figcaption></figure>
+          <figure class="slide"><img src="img/welcome.jpg" width="1280" height="800" alt="Welcome window" loading="lazy"><figcaption><b>Welcome</b><span>The first thing you see: connect to Wi-Fi, get apps, change the look, or install Wisp to the disk.</span></figcaption></figure>
+          <figure class="slide"><img src="img/launcher.jpg" width="1280" height="800" alt="App search" loading="lazy"><figcaption><b>Find any app</b><span>Press Super + Space and type a few letters. Press Enter to open it.</span></figcaption></figure>
+          <figure class="slide"><img src="img/app-store.jpg" width="1280" height="800" alt="App Store" loading="lazy"><figcaption><b>App Store</b><span>Chromium, LibreOffice, Thunderbird, Telegram, GIMP, VLC and thousands more, each one click away. Updates live here too.</span></figcaption></figure>
+          <figure class="slide"><img src="img/settings.jpg" width="1280" height="800" alt="Settings, Appearance" loading="lazy"><figcaption><b>Settings</b><span>Fourteen pages in plain words, from Wi-Fi to default apps. Changes apply as you click.</span></figcaption></figure>
+          <figure class="slide"><img src="img/taskmanager.jpg" width="1280" height="800" alt="Task Manager" loading="lazy"><figcaption><b>Task Manager</b><span>See what's using memory and close stuck apps. Opens with Ctrl + Alt + Delete.</span></figcaption></figure>
+          <figure class="slide"><img src="img/light-theme.jpg" width="1280" height="800" alt="Light style" loading="lazy"><figcaption><b>Light style</b><span>Prefer it bright? One click switches every app, the window borders and the clock.</span></figcaption></figure>
+          <figure class="slide"><img class="fit" src="img/boot-menu.jpg" width="800" height="600" alt="Boot menu" loading="lazy"><figcaption><b>Boot menu</b><span>Starts on old BIOS and new UEFI computers, with a safe graphics option for tricky hardware.</span></figcaption></figure>
+        </div>
+        <div class="dots" role="group" aria-label="Choose a screenshot"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="around" style="background:var(--panel);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label">Using Wisp</span>
+          <h2>Find your way around</h2>
+          <p>If you've used Windows, you already know most of it. Click a number to see what each part does.</p>
+        </div>
+      </div>
+      <div class="mapgrid">
+        <div>
+          <div class="map" id="map">
+            <img src="img/desktop.jpg" width="1280" height="800" alt="The Wisp desktop, with numbered markers on each part">
+            <button class="pin" style="left:2.3%;top:91%" data-part="0" aria-label="1: Apps button">1</button>
+            <button class="pin" style="left:12.9%;top:91%" data-part="1" aria-label="2: Open windows">2</button>
+            <button class="pin" style="left:88.5%;top:91%" data-part="2" aria-label="3: Wi-Fi, sound and clock">3</button>
+            <button class="pin" style="left:98%;top:91%" data-part="3" aria-label="4: Power">4</button>
+            <button class="pin" style="left:9.5%;top:30%" data-part="4" aria-label="5: Desktop shortcuts">5</button>
+            <button class="pin" style="left:58.6%;top:20%" data-part="5" aria-label="6: Window buttons">6</button>
+            <button class="pin" style="left:79%;top:11%" data-part="6" aria-label="7: Clock and weather">7</button>
+          </div>
+          <p class="hint">Right-click an empty part of the desktop for a quick menu with your apps, Settings and power options.</p>
+        </div>
+        <ul class="parts" id="parts">
+          <li><button data-part="0"><span class="n">1</span><span><b>Apps button</b><span class="t">Shows all your apps; type to search. Same as pressing <kbd>Super</kbd> + <kbd>Space</kbd> (the Windows key). Right-click it for the power menu.</span></span></button></li>
+          <li><button data-part="1"><span class="n">2</span><span><b>Open windows</b><span class="t">Every open app appears here. Click to switch, or use <kbd>Alt</kbd> + <kbd>Tab</kbd>.</span></span></button></li>
+          <li><button data-part="2"><span class="n">3</span><span><b>Wi-Fi, sound and clock</b><span class="t">Click the network icon to join Wi-Fi. Scroll on the speaker to change volume, click it for sound settings, right-click to mute.</span></span></button></li>
+          <li><button data-part="3"><span class="n">4</span><span><b>Power</b><span class="t">Lock, sleep, restart or shut down. <kbd>Super</kbd> + <kbd>X</kbd> opens it too.</span></span></button></li>
+          <li><button data-part="4"><span class="n">5</span><span><b>Desktop shortcuts</b><span class="t">Double-click to open the App Store, Files, Firefox or Settings. "Install Wisp OS" only appears while you're trying Wisp from USB.</span></span></button></li>
+          <li><button data-part="5"><span class="n">6</span><span><b>Window buttons</b><span class="t">Minimise, maximise, close. Drag the title bar to move. <kbd>Super</kbd> + <kbd>←</kbd> / <kbd>→</kbd> snaps to half the screen.</span></span></button></li>
+          <li><button data-part="6"><span class="n">7</span><span><b>Clock and weather</b><span class="t">Weather for your town when you're online. Turn it off in Settings → Desktop &amp; Taskbar.</span></span></button></li>
         </ul>
       </div>
-      <div class="shot">
-        <img src="img/welcome.png" width="1280" height="800" alt="The Wisp OS desktop with the Welcome window open. It offers buttons to connect to Wi-Fi, get apps, change the look and install Wisp OS.">
-      </div>
     </div>
   </section>
 
-  <section class="alt">
-    <div class="wrap">
-      <div class="points">
-        <div>
-          <h3>Fast on old hardware</h3>
-          <p>No background clutter. The whole desktop uses about 167 MB, which leaves the rest of the memory for your browser and apps.</p>
+  <section id="settings">
+    <div class="wrap settings-grid">
+      <div>
+        <span class="label">Settings</span>
+        <h2 style="margin-top:10px">Everything in one place</h2>
+        <p style="color:var(--ink-2);margin-top:10px">No config files, no terminal. Pick a page:</p>
+        <div class="pages" id="pages"></div>
+      </div>
+      <div class="carousel small" data-carousel data-pages="pages">
+        <div class="track">
+          <figure class="slide" data-name="Wi-Fi"><img src="img/s-wifi.jpg" width="948" height="716" alt="Wi-Fi settings" loading="lazy"><figcaption><b>Wi-Fi &amp; Network</b><span>Join networks, hidden networks, airplane mode, and your IP address.</span></figcaption></figure>
+          <figure class="slide" data-name="Display"><img src="img/s-display.jpg" width="948" height="716" alt="Display settings" loading="lazy"><figcaption><b>Display</b><span>Resolution, text size, brightness and night light.</span></figcaption></figure>
+          <figure class="slide" data-name="Sound"><img src="img/s-sound.jpg" width="948" height="716" alt="Sound settings" loading="lazy"><figcaption><b>Sound</b><span>Speakers or headphones, microphone, and a volume for each app.</span></figcaption></figure>
+          <figure class="slide" data-name="Appearance"><img src="img/s-appearance.jpg" width="948" height="716" alt="Appearance settings" loading="lazy"><figcaption><b>Appearance</b><span>Dark or light, seven accent colours, wallpapers and pointer size.</span></figcaption></figure>
+          <figure class="slide" data-name="Taskbar"><img src="img/s-desktop.jpg" width="948" height="716" alt="Desktop and taskbar settings" loading="lazy"><figcaption><b>Desktop &amp; Taskbar</b><span>Taskbar at the top or bottom, 12 or 24-hour clock, desktop clock and weather.</span></figcaption></figure>
+          <figure class="slide" data-name="Mouse"><img src="img/s-mouse.jpg" width="948" height="716" alt="Mouse and touchpad settings" loading="lazy"><figcaption><b>Mouse &amp; Touchpad</b><span>Speed, natural scrolling, tap to click, left-handed.</span></figcaption></figure>
+          <figure class="slide" data-name="Keyboard"><img src="img/s-keyboard.jpg" width="948" height="716" alt="Keyboard settings" loading="lazy"><figcaption><b>Keyboard</b><span>Two layouts switched with Alt + Shift, and key repeat speed.</span></figcaption></figure>
+          <figure class="slide" data-name="Date &amp; Time"><img src="img/s-datetime.jpg" width="948" height="716" alt="Date and time settings" loading="lazy"><figcaption><b>Date &amp; Time</b><span>Time zone, automatic time and clock format.</span></figcaption></figure>
+          <figure class="slide" data-name="Default apps"><img src="img/s-apps.jpg" width="948" height="716" alt="Default apps settings" loading="lazy"><figcaption><b>Default Apps</b><span>Choose what opens web links, pictures, music, videos and PDFs.</span></figcaption></figure>
+          <figure class="slide" data-name="Notifications"><img src="img/s-notifications.jpg" width="948" height="716" alt="Notification settings" loading="lazy"><figcaption><b>Notifications</b><span>Do not disturb and where pop-ups appear.</span></figcaption></figure>
+          <figure class="slide" data-name="Storage"><img src="img/s-storage.jpg" width="948" height="716" alt="Storage settings" loading="lazy"><figcaption><b>Storage</b><span>What's using space, empty the trash, clear temporary files.</span></figcaption></figure>
+          <figure class="slide" data-name="Updates"><img src="img/s-updates.jpg" width="948" height="716" alt="Updates settings" loading="lazy"><figcaption><b>Updates</b><span>Check and install updates for Wisp and every app at once.</span></figcaption></figure>
+          <figure class="slide" data-name="About"><img src="img/s-about.jpg" width="948" height="716" alt="About this computer" loading="lazy"><figcaption><b>About</b><span>Processor, memory, disk and the computer's name.</span></figcaption></figure>
         </div>
+        <div class="dots" role="group" aria-label="Choose a settings page"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fast" style="background:var(--panel);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="sec-head">
         <div>
-          <h3>Ready to use</h3>
-          <p>Firefox, a word processor, spreadsheets, a PDF reader, music and video, a file manager and an App Store with thousands more apps.</p>
+          <span class="label">Lightweight</span>
+          <h2>Built for 1 GB of memory</h2>
+          <p>Wisp runs only what a desktop needs, so the browser and your apps get the rest.</p>
         </div>
-        <div>
-          <h3>Simple to look after</h3>
-          <p>All settings are in one Settings app. Updates for Wisp and all your apps arrive in one place, with one button.</p>
-        </div>
       </div>
-    </div>
-  </section>
-
-  <section id="around">
-    <div class="wrap">
-      <div class="head">
-        <h2>Find your way around</h2>
-        <p>This is the Wisp desktop. If you have used Windows, most of it will feel familiar: apps open from the button in the bottom-left corner, and open windows show in the bar along the bottom.</p>
-      </div>
-      <div class="map">
-        <img src="img/desktop.png" width="1280" height="800" alt="The Wisp OS desktop with a Calculator window open. Shortcuts on the left, a clock with the weather in the top right, and the taskbar along the bottom.">
-        <span class="pin" style="left:2.3%;top:91%">1</span>
-        <span class="pin" style="left:12.9%;top:91%">2</span>
-        <span class="pin" style="left:88.5%;top:91%">3</span>
-        <span class="pin" style="left:98%;top:91%">4</span>
-        <span class="pin" style="left:9.5%;top:30%">5</span>
-        <span class="pin" style="left:58.6%;top:20%">6</span>
-        <span class="pin" style="left:79%;top:11%">7</span>
-      </div>
-      <ol class="legend">
-        <li><span class="num">1</span><div><b>Apps button</b><span class="muted">Click it to see all your apps and search them by name. You can also press <kbd>Super</kbd> + <kbd>Space</kbd> (the Windows key) from anywhere.</span></div></li>
-        <li><span class="num">2</span><div><b>Open windows</b><span class="muted">Every open app shows here. Click one to bring it to the front, or press <kbd>Alt</kbd> + <kbd>Tab</kbd> to switch.</span></div></li>
-        <li><span class="num">3</span><div><b>Wi-Fi, sound and clock</b><span class="muted">Click the network icon to pick a Wi-Fi network. Scroll on the speaker to change the volume, or click it for sound settings.</span></div></li>
-        <li><span class="num">4</span><div><b>Power</b><span class="muted">Lock, sleep, restart or shut down.</span></div></li>
-        <li><span class="num">5</span><div><b>Desktop shortcuts</b><span class="muted">Double-click to open the App Store, Files, Firefox or Settings. "Install Wisp OS" only shows while you are trying Wisp from a USB stick.</span></div></li>
-        <li><span class="num">6</span><div><b>Window buttons</b><span class="muted">Minimise, maximise and close. Drag the title bar to move a window. <kbd>Super</kbd> + <kbd>←</kbd> or <kbd>→</kbd> fills half the screen.</span></div></li>
-        <li><span class="num">7</span><div><b>Clock and weather</b><span class="muted">Shows the weather for your town when you're online. You can hide it in Settings → Desktop &amp; Taskbar.</span></div></li>
-      </ol>
-      <p class="tip"><b>Tip:</b> right-click an empty part of the desktop for a menu with your main apps, Settings and the power options.</p>
-    </div>
-  </section>
-
-  <section id="first-steps" class="alt">
-    <div class="wrap">
-      <div class="head">
-        <h2>Your first ten minutes</h2>
-        <p>When Wisp starts for the first time, a Welcome window offers the first three of these.</p>
-      </div>
-      <ol class="steps">
-        <li>
-          <div class="txt">
-            <h3>Connect to the internet</h3>
-            <p>Click the network icon in the bottom-right corner and choose your Wi-Fi. A network cable works on its own, with nothing to set up.</p>
-            <p class="path">Or: <b>Settings → Wi-Fi &amp; Network</b></p>
-          </div>
-          <img src="img/welcome.png" width="1280" height="800" alt="The Welcome window, with Connect to Wi-Fi as the first option." loading="lazy">
-        </li>
-        <li>
-          <div class="txt">
-            <h3>Get the apps you need</h3>
-            <p>Open the App Store from the desktop. Popular apps like Chromium, LibreOffice, VLC and GIMP are one click away, and Search finds thousands more.</p>
-            <p class="path">Desktop → <b>App Store</b></p>
-          </div>
-          <img src="img/app-store.png" width="1280" height="800" alt="The App Store showing featured apps with Install buttons." loading="lazy">
-        </li>
-        <li>
-          <div class="txt">
-            <h3>Make it yours</h3>
-            <p>Pick dark or light, a wallpaper and an accent colour. Settings also has the screen size, night light, touchpad, keyboard layout and time zone.</p>
-            <p class="path"><b>Settings → Appearance</b></p>
-          </div>
-          <img src="img/settings.png" width="1280" height="800" alt="The Appearance page in Settings with dark and light styles and wallpapers." loading="lazy">
-        </li>
-        <li>
-          <div class="txt">
-            <h3>Find anything fast</h3>
-            <p>Press <kbd>Super</kbd> + <kbd>Space</kbd> and start typing an app's name, then press Enter. It's the quickest way to open anything.</p>
-            <p class="path">Keyboard: <b>Super + Space</b></p>
-          </div>
-          <img src="img/launcher.png" width="1280" height="800" alt="The app search box open over the desktop, listing apps." loading="lazy">
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <section id="shortcuts">
-    <div class="wrap">
-      <div class="head">
-        <h2>Keyboard shortcuts</h2>
-        <p><kbd>Super</kbd> is the key with the Windows logo on most keyboards.</p>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Press</th><th>To</th></tr></thead>
-          <tbody>
-            <tr><td><kbd>Super</kbd> + <kbd>Space</kbd></td><td>Search for an app and open it</td></tr>
-            <tr><td><kbd>Alt</kbd> + <kbd>Tab</kbd></td><td>Switch between open windows</td></tr>
-            <tr><td><kbd>Super</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td><td>Put a window on the left or right half of the screen</td></tr>
-            <tr><td><kbd>Super</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd></td><td>Maximise or minimise a window</td></tr>
-            <tr><td><kbd>Alt</kbd> + <kbd>F4</kbd></td><td>Close a window</td></tr>
-            <tr><td><kbd>Super</kbd> + <kbd>B</kbd> / <kbd>E</kbd></td><td>Open Firefox / open Files</td></tr>
-            <tr><td><kbd>Super</kbd> + <kbd>I</kbd></td><td>Open Settings</td></tr>
-            <tr><td><kbd>Super</kbd> + <kbd>L</kbd></td><td>Lock the screen</td></tr>
-            <tr><td><kbd>Print Screen</kbd></td><td>Take a screenshot (saved in Pictures)</td></tr>
-            <tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Delete</kbd></td><td>Open the Task Manager to close a stuck app</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section id="memory" class="alt">
-    <div class="wrap">
-      <div class="head">
-        <h2>Why it's fast</h2>
-        <p>Wisp only runs what a desktop needs. Here is a 1 GB computer right after starting Wisp, drawn to scale.</p>
-      </div>
-      <div class="mem">
-        <div>
-          <div class="bar" role="img" aria-label="167 of 964 megabytes in use"><span class="used" style="width:calc(100% * 167 / 964)"></span></div>
-          <div class="scale"><span>0</span><span>250 MB</span><span>500 MB</span><span>750 MB</span><span>964 MB</span></div>
-          <ul class="memlist">
+      <div class="tiles">
+        <div class="tile" style="background:var(--bg)">
+          <div class="big-num">167 <small>MB at idle</small></div>
+          <div class="bar" role="img" aria-label="167 of 964 MB in use"><i style="width:17.3%"></i></div>
+          <ul class="rows">
             <li><span>Display and window manager</span><span>34 MB</span></li>
-            <li><span>Taskbar, desktop icons and clock</span><span>38 MB</span></li>
-            <li><span>Wi-Fi, sound and other services</span><span>48 MB</span></li>
-            <li><span>Linux kernel and memory buffers</span><span>47 MB</span></li>
-            <li class="total"><span>In use</span><span>167 MB</span></li>
-            <li><span>Left for your apps</span><span>651 MB</span></li>
+            <li><span>Taskbar, icons, clock</span><span>38 MB</span></li>
+            <li><span>Wi-Fi, sound, services</span><span>48 MB</span></li>
+            <li><span>Kernel and buffers</span><span>47 MB</span></li>
+            <li><span>Free for your apps</span><span>651 MB</span></li>
           </ul>
         </div>
-        <div class="compare">
-          <h3>Memory used right after starting</h3>
-          <div class="cmp wisp"><header><span>Wisp OS</span><span>167 MB</span></header><div class="track"><i style="width:5.6%"></i></div></div>
-          <div class="cmp"><header><span>A typical Ubuntu desktop</span><span>about 1.3 GB</span></header><div class="track"><i style="width:43%"></i></div></div>
-          <div class="cmp"><header><span>Windows 11</span><span>about 2.8 GB</span></header><div class="track"><i style="width:93%"></i></div></div>
-          <p class="small">Wisp measured with <code>free -m</code> on a 1 GB machine. The other two are typical figures and vary by computer.</p>
-          <p class="muted">If memory ever runs out, Wisp closes the biggest browser tab before the computer can freeze.</p>
+        <div class="tile" style="background:var(--bg)">
+          <h3>Compared after start-up</h3>
+          <div class="cmp">
+            <div class="w"><span>Wisp OS</span><i style="width:5.6%"></i><span>167 MB</span></div>
+            <div><span>Ubuntu</span><i style="width:43%"></i><span>~1.3 GB</span></div>
+            <div><span>Windows 11</span><i style="width:93%"></i><span>~2.8 GB</span></div>
+          </div>
+          <p style="font-size:.82rem;color:var(--ink-3)">Wisp measured with <code>free -m</code> on a 1 GB machine. Others are typical figures; they vary.</p>
+          <h3 style="margin-top:6px">Never frozen</h3>
+          <p>If memory runs out, Wisp closes the biggest browser tab before the computer can lock up.</p>
+        </div>
+        <div class="tile" style="background:var(--bg)">
+          <img src="img/tm-performance.jpg" width="828" height="634" alt="Task Manager performance graphs for CPU and memory" loading="lazy">
+          <p>Watch it yourself in the Task Manager: live CPU and memory graphs.</p>
+        </div>
+        <div class="tile wide" style="background:var(--bg)">
+          <h3>Apps included</h3>
+          <div class="apps"><span>Firefox</span><span>Files</span><span>AbiWord (documents)</span><span>Gnumeric (spreadsheets)</span><span>PDF viewer</span><span>Media player</span><span>Image viewer</span><span>Drawing</span><span>Text editor</span><span>Calculator</span><span>Archives</span><span>Screenshot</span><span>Terminal</span><span>Task Manager</span><span>App Store</span></div>
+          <p>Need more? The App Store has LibreOffice, Chromium, VLC, GIMP, Thunderbird, Telegram, games and thousands of others.</p>
+        </div>
+        <div class="tile" style="background:var(--bg)">
+          <h3>Five wallpapers</h3>
+          <div class="swatches"><img src="img/night.svg" alt="Night"><img src="img/aurora.svg" alt="Aurora"><img src="img/ember.svg" alt="Ember"><img src="img/lagoon.svg" alt="Lagoon"><img src="img/dawn.svg" alt="Dawn"></div>
+          <p>Or any picture of your own.</p>
         </div>
       </div>
     </div>
@@ -380,89 +433,55 @@ footer .links { display: flex; gap: 20px; margin-left: auto; }
 
   <section id="install">
     <div class="wrap">
-      <div class="head">
-        <h2>Try it, then install it</h2>
-        <p>You can run Wisp from a USB stick without changing anything on the computer. If you like it, install it from the desktop.</p>
-      </div>
-      <div class="install">
+      <div class="sec-head">
         <div>
-          <ol class="howto">
-            <li><div><b>Download the file</b><p>One file, <code>wisp-os-0.1-x86_64.iso</code>, about 900 MB.</p></div></li>
-            <li><div><b>Put it on a USB stick</b><p>Install <a href="https://etcher.balena.io/">balenaEtcher</a> (free, for Windows, Mac and Linux). Choose the file, choose the USB stick, and click Flash. Anything already on the stick is erased.</p></div></li>
-            <li><div><b>Start the computer from the USB stick</b><p>Plug in the stick, switch the computer on and press the boot menu key straight away: <kbd>F12</kbd> on ThinkPads and Dell, <kbd>F9</kbd> on HP, <kbd>F12</kbd> or <kbd>F2</kbd> on Lenovo IdeaPads, <kbd>Esc</kbd> on ASUS. Pick the USB stick.</p></div></li>
-            <li><div><b>Try it</b><p>Wisp starts in about a minute. Everything runs from the stick, so the computer's own files are untouched. Check that Wi-Fi, sound and the touchpad work.</p></div></li>
-            <li><div><b>Install</b><p>Double-click <b>Install Wisp OS</b> on the desktop, pick the disk, and set a password. Take the stick out and restart when it says it's done.</p></div></li>
-          </ol>
-          <div class="warn" role="note">
-            <b>Installing replaces everything on the disk you pick.</b>
-            Windows and all files on that disk are deleted. Copy your photos and documents somewhere else first. Trying Wisp from the USB stick deletes nothing.
-          </div>
+          <span class="label">Install</span>
+          <h2>Try it first, install when you're ready</h2>
+          <p>About 15 minutes from download to desktop.</p>
         </div>
-        <aside class="side">
-          <div>
-            <a class="btn btn-primary" href="https://github.com/vetonfetai/wispos/releases/download/v0.1/wisp-os-0.1-x86_64.iso">Download Wisp OS 0.1 <span class="size">902 MB</span></a>
-          </div>
-          <div>
-            <h3>You need</h3>
-            <ul>
-              <li>A 64-bit PC or laptop with an Intel or AMD processor</li>
-              <li>1 GB of memory or more (2 GB is comfortable)</li>
-              <li>8 GB of disk space</li>
-              <li>A USB stick of 2 GB or more</li>
-            </ul>
-          </div>
-          <div>
-            <h3>Check the download (optional)</h3>
-            <p class="small">The SHA-256 checksum of the file:</p>
-            <div class="hash">e0c9b1328d4aae70042af8a5b045f68c0d8e8eeb682fe164911c654774837512</div>
-          </div>
-        </aside>
+      </div>
+      <ol class="install-steps">
+        <li><h3>Download</h3><p>Get <code>wisp-os-0.1-x86_64.iso</code> (902 MB).</p></li>
+        <li><h3>Make a USB stick</h3><p>Open <a href="https://etcher.balena.io/">balenaEtcher</a> (free), pick the file and a USB stick of 2 GB or more, click Flash.</p></li>
+        <li><h3>Start from USB</h3><p>Switch the PC on and press the boot menu key: <kbd>F12</kbd> on ThinkPad and Dell, <kbd>F9</kbd> on HP, <kbd>Esc</kbd> on ASUS. Choose the stick.</p></li>
+        <li><h3>Try, then install</h3><p>Everything runs from the stick. When you're happy, double-click <b>Install Wisp OS</b>, pick the disk and set a password.</p></li>
+      </ol>
+      <div class="warn" role="note"><svg viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg><span><b>Installing erases the disk you choose</b>, including Windows and your files. Back up first. Trying Wisp from the USB stick changes nothing.</span></div>
+      <div class="getbox">
+        <a class="btn btn-primary" href="https://github.com/vetonfetai/wispos/releases/download/v0.1/wisp-os-0.1-x86_64.iso">Download Wisp OS 0.1 <small>902 MB</small></a>
+        <div><h3>You need</h3><ul><li>64-bit Intel or AMD PC</li><li>1 GB RAM (2 GB comfortable), 8 GB disk</li></ul></div>
+        <div><h3>SHA-256 checksum</h3><div class="hash">e0c9b1328d4aae70042af8a5b045f68c0d8e8eeb682fe164911c654774837512</div></div>
       </div>
     </div>
   </section>
 
-  <section id="faq" class="alt">
-    <div class="wrap">
-      <div class="head">
-        <h2>Questions</h2>
+  <section id="faq" style="background:var(--panel);border-top:1px solid var(--line)">
+    <div class="wrap two">
+      <div>
+        <span class="label">Shortcuts</span>
+        <h2 style="margin:10px 0 18px">Handy keys</h2>
+        <div class="keys">
+          <div><b><kbd>Super</kbd> + <kbd>Space</kbd></b><span>Search and open apps</span></div>
+          <div><b><kbd>Alt</kbd> + <kbd>Tab</kbd></b><span>Switch windows</span></div>
+          <div><b><kbd>Super</kbd> + <kbd>←</kbd> <kbd>→</kbd></b><span>Snap to half the screen</span></div>
+          <div><b><kbd>Super</kbd> + <kbd>↑</kbd> <kbd>↓</kbd></b><span>Maximise / minimise</span></div>
+          <div><b><kbd>Super</kbd> + <kbd>B</kbd> / <kbd>E</kbd></b><span>Firefox / Files</span></div>
+          <div><b><kbd>Super</kbd> + <kbd>I</kbd></b><span>Settings</span></div>
+          <div><b><kbd>Super</kbd> + <kbd>L</kbd></b><span>Lock the screen</span></div>
+          <div><b><kbd>Print Screen</kbd></b><span>Screenshot to Pictures</span></div>
+          <div><b><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Del</kbd></b><span>Task Manager</span></div>
+        </div>
       </div>
       <div class="faq">
-        <details>
-          <summary>Is Wisp OS really free?</summary>
-          <div><p>Yes. There is nothing to buy, no account and no ads. Wisp is built on Alpine Linux, which is free and open source, and its own code is on <a href="https://github.com/vetonfetai/wispos">GitHub</a>.</p></div>
-        </details>
-        <details>
-          <summary>Will it delete Windows?</summary>
-          <div><p>Only if you install it. Running Wisp from the USB stick changes nothing on the computer. Installing replaces everything on the disk you choose, including Windows, so back up your files first. Wisp can't yet be installed alongside Windows.</p></div>
-        </details>
-        <details>
-          <summary>Can I run Windows programs like Microsoft Office or Photoshop?</summary>
-          <div><p>No, Windows programs don't run on Wisp. There are free alternatives in the App Store: LibreOffice opens Word, Excel and PowerPoint files, GIMP edits photos, and web apps like Gmail, Google Docs and Office 365 work in Firefox.</p></div>
-        </details>
-        <details>
-          <summary>How do I install more apps?</summary>
-          <div><p>Open the App Store from the desktop. The first tab has hand-picked apps; Search finds anything in Alpine Linux's catalogue of thousands of packages. Click Install and it's added to your apps.</p></div>
-        </details>
-        <details>
-          <summary>How do updates work?</summary>
-          <div><p>Wisp checks for updates once a day and shows a notification when there are some. Open <b>Settings → Updates</b> and click Install updates. This updates Wisp itself and every app at once. Your files and settings are kept.</p></div>
-        </details>
-        <details>
-          <summary>My Wi-Fi doesn't show up. What can I do?</summary>
-          <div><p>Wisp includes drivers for most Intel, Realtek, Atheros and MediaTek Wi-Fi chips. Some Broadcom chips, common in older HP and Dell laptops, aren't supported yet. A network cable or a cheap USB Wi-Fi adapter works in the meantime.</p></div>
-        </details>
-        <details>
-          <summary>Does it work on a Mac?</summary>
-          <div><p>Not on Macs with Apple chips (M1 and newer). Older Intel Macs may start it, but they aren't tested. To just try Wisp on any computer, you can run it in a virtual machine.</p></div>
-        </details>
-        <details>
-          <summary>An app stopped responding. How do I close it?</summary>
-          <div><p>Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Delete</kbd> to open the Task Manager, select the app and click End task.</p></div>
-        </details>
-        <details>
-          <summary>What's coming next?</summary>
-          <div><p>More apps in the App Store through Flathub (Spotify, Discord, Zoom and others), a list of laptops tested to work, and installing next to Windows.</p></div>
-        </details>
+        <span class="label">FAQ</span>
+        <h2 style="margin:10px 0 18px">Questions</h2>
+        <details><summary>Is it really free?</summary><p>Yes. No price, no account, no ads. It's built on Alpine Linux and the code is on <a href="https://github.com/vetonfetai/wispos">GitHub</a>.</p></details>
+        <details><summary>Will it delete Windows?</summary><p>Only if you install it. Trying it from USB changes nothing. Installing replaces everything on the chosen disk; installing next to Windows isn't supported yet.</p></details>
+        <details><summary>Can I use Microsoft Office or Photoshop?</summary><p>Windows programs don't run on Wisp. LibreOffice (in the App Store) opens Word, Excel and PowerPoint files, GIMP edits photos, and Office 365 and Google Docs work in Firefox.</p></details>
+        <details><summary>How do updates work?</summary><p>Wisp checks once a day and shows a notification. Open Settings → Updates and click Install updates. Wisp and all your apps update together, and your files and settings stay.</p></details>
+        <details><summary>My Wi-Fi doesn't appear.</summary><p>Most Intel, Realtek, Atheros and MediaTek Wi-Fi works. Some Broadcom chips (common in older HP and Dell laptops) aren't supported yet; use a cable or a USB Wi-Fi adapter meanwhile.</p></details>
+        <details><summary>Does it run on a Mac?</summary><p>Not on Apple-chip Macs (M1 and newer). To try Wisp on any computer, run it in a virtual machine.</p></details>
+        <details><summary>What's coming next?</summary><p>Flathub apps like Spotify, Discord and Zoom in the App Store, a list of tested laptops, and installing next to Windows.</p></details>
       </div>
     </div>
   </section>
@@ -472,9 +491,92 @@ footer .links { display: flex; gap: 20px; margin-left: auto; }
   <div class="wrap">
     <a class="brand" href="#top"><img src="img/wisp.svg" alt="">Wisp OS</a>
     <span>Free and open source, built on Alpine Linux.</span>
-    <span class="links">
-      <a href="https://github.com/vetonfetai/wispos">Source code</a>
-      <a href="https://github.com/vetonfetai/wispos/releases">All releases</a>
-    </span>
+    <span class="links"><a href="https://github.com/vetonfetai/wispos">Source code</a><a href="https://github.com/vetonfetai/wispos/releases">Releases</a></span>
   </div>
 </footer>
+
+<script>
+(() => {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Hero laptop: cycle through screenshots, chips pick one
+  const shots = [...document.querySelectorAll("#screen img")];
+  const chips = [...document.querySelectorAll("#chips .chip")];
+  let cur = 0, timer = null;
+  const showShot = i => {
+    cur = (i + shots.length) % shots.length;
+    shots.forEach((s, k) => s.classList.toggle("on", k === cur));
+    chips.forEach((c, k) => c.setAttribute("aria-pressed", String(k === cur)));
+  };
+  const play = () => { if (!reduce) { clearInterval(timer); timer = setInterval(() => showShot(cur + 1), 4500); } };
+  chips.forEach((c, i) => c.addEventListener("click", () => { showShot(i); play(); }));
+  const laptop = document.querySelector(".laptop");
+  laptop.addEventListener("mouseenter", () => clearInterval(timer));
+  laptop.addEventListener("mouseleave", play);
+  play();
+
+  // Carousels: arrows, dots, optional page buttons
+  document.querySelectorAll("[data-carousel]").forEach(car => {
+    const track = car.querySelector(".track");
+    const slides = [...track.children];
+    const dots = car.querySelector(".dots");
+    const ctrl = car.closest("section").querySelector(".ctrl");
+    const pageBox = car.dataset.pages && document.getElementById(car.dataset.pages);
+    const go = i => {
+      i = Math.max(0, Math.min(slides.length - 1, i));
+      track.scrollTo({ left: slides[i].offsetLeft - track.offsetLeft, behavior: reduce ? "auto" : "smooth" });
+    };
+    const dotBtns = slides.map((s, i) => {
+      const b = document.createElement("button");
+      b.setAttribute("aria-label", "Show " + (s.dataset.name || s.querySelector("b").textContent));
+      b.addEventListener("click", () => go(i));
+      dots.appendChild(b);
+      return b;
+    });
+    const pageBtns = pageBox ? slides.map((s, i) => {
+      const b = document.createElement("button");
+      b.textContent = s.dataset.name;
+      b.addEventListener("click", () => go(i));
+      pageBox.appendChild(b);
+      return b;
+    }) : [];
+    const current = () => {
+      const x = track.scrollLeft;
+      let best = 0, d = Infinity;
+      slides.forEach((s, i) => { const dd = Math.abs(s.offsetLeft - track.offsetLeft - x); if (dd < d) { d = dd; best = i; } });
+      return best;
+    };
+    const sync = () => {
+      const i = current();
+      dotBtns.forEach((b, k) => b.setAttribute("aria-current", String(k === i)));
+      pageBtns.forEach((b, k) => b.setAttribute("aria-current", String(k === i)));
+      if (ctrl) {
+        const [prev, next] = ctrl.querySelectorAll(".arrow");
+        prev.disabled = track.scrollLeft < 4;
+        next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      }
+    };
+    let raf = 0;
+    track.addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(sync); }, { passive: true });
+    if (ctrl) ctrl.querySelectorAll(".arrow").forEach(a => a.addEventListener("click", () => go(current() + Number(a.dataset.dir))));
+    track.setAttribute("tabindex", "0");
+    track.addEventListener("keydown", e => {
+      if (e.key === "ArrowRight") { e.preventDefault(); go(current() + 1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); go(current() - 1); }
+    });
+    sync();
+  });
+
+
+  // Desktop map: pins and list highlight together
+  const pins = [...document.querySelectorAll("#map .pin")];
+  const parts = [...document.querySelectorAll("#parts button")];
+  const pick = i => {
+    pins.forEach(p => p.classList.toggle("on", Number(p.dataset.part) === i));
+    parts.forEach(p => p.classList.toggle("on", Number(p.dataset.part) === i));
+  };
+  pins.forEach(p => p.addEventListener("click", () => pick(Number(p.dataset.part))));
+  parts.forEach(p => p.addEventListener("click", () => pick(Number(p.dataset.part))));
+  pick(0);
+})();
+</script>
