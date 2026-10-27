@@ -1,0 +1,6 @@
+#!/bin/sh
+# wisp-screenshot [area]  - saves to ~/Pictures
+dir="$HOME/Pictures"; mkdir -p "$dir"
+file="$dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+if [ "$1" = area ]; then scrot -s -f "$file"; else scrot "$file"; fi && \
+	notify-send -a wisp-screenshot -i camera-photo-symbolic "Screenshot saved" "$file"

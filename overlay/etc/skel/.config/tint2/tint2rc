@@ -1,0 +1,197 @@
+# Wisp OS panel
+#---- Backgrounds
+# 1: panel
+rounded = 0
+border_width = 0
+background_color = #0d0f14 94
+border_color = #000000 0
+background_color_hover = #0d0f14 94
+border_color_hover = #000000 0
+background_color_pressed = #0d0f14 94
+border_color_pressed = #000000 0
+
+# 2: task (normal / iconified)
+rounded = 8
+border_width = 0
+background_color = #ffffff 0
+border_color = #000000 0
+background_color_hover = #ffffff 8
+border_color_hover = #000000 0
+background_color_pressed = #ffffff 14
+border_color_pressed = #000000 0
+
+# 3: task (active)
+rounded = 8
+border_width = 1
+border_sides = B
+background_color = #8ab4ff 16
+border_color = #8ab4ff 100
+background_color_hover = #8ab4ff 24
+border_color_hover = #8ab4ff 100
+background_color_pressed = #8ab4ff 30
+border_color_pressed = #8ab4ff 100
+
+# 4: buttons
+rounded = 10
+border_width = 0
+background_color = #ffffff 0
+border_color = #000000 0
+background_color_hover = #ffffff 10
+border_color_hover = #000000 0
+background_color_pressed = #ffffff 16
+border_color_pressed = #000000 0
+
+# 5: tooltip
+rounded = 8
+border_width = 1
+background_color = #151821 100
+border_color = #2a3042 100
+background_color_hover = #151821 100
+border_color_hover = #2a3042 100
+background_color_pressed = #151821 100
+border_color_pressed = #2a3042 100
+
+#---- Panel
+panel_items = PTSBPCP
+panel_size = 100% 44
+panel_margin = 0 0
+panel_padding = 8 5 6
+panel_background_id = 1
+wm_menu = 1
+panel_dock = 0
+panel_pivot_struts = 0
+panel_position = bottom center horizontal
+panel_layer = top
+panel_monitor = all
+panel_shrink = 0
+autohide = 0
+strut_policy = follow_size
+panel_window_name = tint2
+disable_transparency = 0
+mouse_effects = 1
+font_shadow = 0
+mouse_hover_icon_asb = 100 0 10
+mouse_pressed_icon_asb = 100 0 0
+
+#---- Taskbar
+taskbar_mode = single_desktop
+taskbar_hide_if_empty = 0
+taskbar_padding = 6 0 6
+taskbar_background_id = 0
+taskbar_active_background_id = 0
+taskbar_name = 0
+taskbar_hide_inactive_tasks = 0
+taskbar_hide_different_monitor = 0
+taskbar_always_show_all_desktop_tasks = 0
+taskbar_distribute_size = 0
+taskbar_sort_order = none
+task_align = left
+
+#---- Task
+task_text = 1
+task_icon = 1
+task_centered = 0
+urgent_nb_of_blink = 100000
+task_maximum_size = 210 34
+task_padding = 10 4 8
+task_tooltip = 1
+task_thumbnail = 0
+task_font = Inter 9.5
+task_font_color = #c9cede 100
+task_active_font_color = #ffffff 100
+task_iconified_font_color = #6b7186 100
+task_urgent_font_color = #ffd479 100
+task_icon_asb = 100 0 0
+task_iconified_icon_asb = 60 0 0
+task_background_id = 2
+task_active_background_id = 3
+task_urgent_background_id = 3
+task_iconified_background_id = 2
+mouse_left = toggle_iconify
+mouse_middle = close
+mouse_right = none
+mouse_scroll_up = prev_task
+mouse_scroll_down = next_task
+
+#---- System tray
+systray_padding = 8 0 8
+systray_background_id = 0
+systray_sort = ascending
+systray_icon_size = 18
+systray_icon_asb = 100 0 0
+systray_monitor = 1
+systray_name_filter =
+
+#---- Battery
+battery_tooltip = 1
+battery_low_status = 15
+battery_low_cmd = wisp-battery-low
+battery_full_cmd =
+bat1_font = Inter Bold 9.5
+bat2_font = Inter 7.5
+battery_font_color = #c9cede 100
+bat1_format = %p
+bat2_format = %s
+battery_padding = 6 0
+battery_background_id = 0
+battery_hide = 101
+ac_connected_cmd =
+ac_disconnected_cmd =
+
+#---- Clock
+time1_format = %H:%M
+time2_format = %a %d %b
+time1_font = Inter Bold 10.5
+time2_font = Inter 7.5
+clock_font_color = #e6e9f2 100
+clock_padding = 10 0
+clock_background_id = 0
+clock_tooltip = %A, %d %B %Y
+clock_tooltip_timezone =
+clock_lclick_command =
+clock_rclick_command =
+
+#---- Tooltip
+tooltip_show_timeout = 0.4
+tooltip_hide_timeout = 0.1
+tooltip_padding = 10 6
+tooltip_background_id = 5
+tooltip_font_color = #e6e9f2 100
+tooltip_font = Inter 9.5
+
+#---- Button 1: app launcher
+button = new
+button_icon = /usr/share/icons/hicolor/scalable/apps/wisp-start.svg
+button_text =
+button_tooltip = Apps  (Super+Space)
+button_lclick_command = rofi -show drun
+button_rclick_command = wisp-power
+button_padding = 8 4 0
+button_background_id = 4
+button_centered = 1
+button_max_icon_size = 26
+
+#---- Button 2: volume
+button = new
+button_icon = /usr/share/icons/Papirus/22x22/panel/audio-volume-high-panel.svg
+button_text =
+button_tooltip = Sound - click for settings, scroll to change
+button_lclick_command = wisp-settings sound
+button_rclick_command = wisp-volume mute
+button_uwheel_command = wisp-volume up
+button_dwheel_command = wisp-volume down
+button_padding = 6 4 0
+button_background_id = 4
+button_centered = 1
+button_max_icon_size = 18
+
+#---- Button 3: power
+button = new
+button_icon = /usr/share/icons/Papirus/22x22/panel/system-shutdown-panel.svg
+button_text =
+button_tooltip = Power
+button_lclick_command = wisp-power
+button_padding = 6 4 0
+button_background_id = 4
+button_centered = 1
+button_max_icon_size = 18

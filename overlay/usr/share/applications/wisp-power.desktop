@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Power Off / Restart
+Comment=Lock, log out, suspend, restart or shut down
+Icon=system-shutdown
+Exec=wisp-power
+Terminal=false
+Categories=System;

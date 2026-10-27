@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+# Shows the Wisp logo on the screen while the system starts.
+
+description="Wisp OS boot logo"
+
+depend() {
+	after udev-trigger
+	keyword -prefix -lxc -docker
+}
+
+start() {
+	grep -qw wisp.serial /proc/cmdline && return 0
+	grep -qw nomodeset /proc/cmdline && return 0
+	# let the graphics driver finish loading so the logo isn't wiped
+	udevadm settle -t 4 2>/dev/null
+	fb=/sys/class/graphics/fb0
+	[ -e $fb ] || return 0
+	mode=$(head -1 $fb/modes 2>/dev/null)
+	res=${mode#*:}; res=${res%%p*}; res=${res%%i*}
+	w=${res%x*}; h=${res#*x}
+	case "$w$h" in *[!0-9]*|'') size=$(cat $fb/virtual_size); w=${size%,*}; h=${size#*,} ;; esac
+	read -r iw ih < /usr/share/wisp/splash.size
+	printf '\033c\033[?25l' > /dev/tty1
+	printf 'IMG_LEFT=%s\nIMG_TOP=%s\n' $(( (w - iw) / 2 )) $(( (h - ih) / 2 - h / 12 )) > /run/wisp-splash.cfg
+	busybox fbsplash -s /usr/share/wisp/splash.ppm -d /dev/fb0 -i /run/wisp-splash.cfg 2>/dev/null
+	return 0
+}

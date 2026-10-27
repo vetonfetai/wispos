@@ -1,0 +1,7 @@
+#!/bin/sh
+# Called by tint2 when the battery is low; ignore machines without a battery.
+for b in /sys/class/power_supply/BAT*; do
+	[ -e "$b" ] || exit 0
+	[ "$(cat "$b/status" 2>/dev/null)" = Discharging ] || exit 0
+done
+notify-send -u critical -a wisp -i battery-caution "Battery low" "Plug in your charger"

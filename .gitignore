@@ -1,0 +1,6 @@
+out/
+.cache/
+out-build.log
+.DS_Store
+__pycache__/
+*.pyc

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Install Wisp OS
+Comment=Install Wisp OS to this computer's disk
+Icon=wisp
+Exec=lxterminal --title="Install Wisp OS" -e "doas wisp-install"
+Terminal=false
+Categories=System;

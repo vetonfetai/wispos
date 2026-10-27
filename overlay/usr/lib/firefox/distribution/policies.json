@@ -1,0 +1,21 @@
+{
+  "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DontCheckDefaultBrowser": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "UserMessaging": { "WhatsNew": false, "ExtensionRecommendations": false, "FeatureRecommendations": false, "MoreFromMozilla": false, "SkipOnboarding": true },
+    "Preferences": {
+      "browser.sessionhistory.max_total_viewers": { "Value": 0, "Status": "default" },
+      "browser.tabs.unloadOnLowMemory": { "Value": true, "Status": "default" },
+      "dom.ipc.processCount": { "Value": 2, "Status": "default" },
+      "dom.ipc.processPrelaunch.enabled": { "Value": false, "Status": "default" },
+      "network.prefetch-next": { "Value": false, "Status": "default" },
+      "browser.urlbar.speculativeConnect.enabled": { "Value": false, "Status": "default" },
+      "accessibility.force_disabled": { "Value": 1, "Status": "default" },
+      "layout.css.prefers-color-scheme.content-override": { "Value": 0, "Status": "default" }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+# Wisp OS session: applies saved settings and starts panel, desktop, sound, etc.
+python3 /usr/lib/wisp/wispsession.py &

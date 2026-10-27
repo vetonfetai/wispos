@@ -1,0 +1,16 @@
+#!/bin/sh
+# One-line weather for the desktop widget, e.g. "6°C · Clear · Ohrid".
+# Cached for 30 minutes; prints nothing when offline.
+cache="$HOME/.cache/wisp-weather"
+mkdir -p "${cache%/*}"
+if [ ! -s "$cache" ] || [ -n "$(find "$cache" -mmin +30 2>/dev/null)" ]; then
+	raw=$(curl -fsm 6 'https://wttr.in/?format=%t|%C|%l' 2>/dev/null | head -1)
+	case "$raw" in
+		*'|'*'|'*)
+			temp=$(echo "$raw" | cut -d'|' -f1 | sed 's/^+//; s/ *$//')
+			cond=$(echo "$raw" | cut -d'|' -f2 | sed 's/^ *//; s/ *$//')
+			city=$(echo "$raw" | cut -d'|' -f3 | cut -d, -f1 | sed 's/^ *//; s/ *$//')
+			case "$raw" in *Unknown*|*rror*|*'<'*) ;; *) echo "$temp · $cond · $city" > "$cache" ;; esac ;;
+	esac
+fi
+[ -s "$cache" ] && cat "$cache"

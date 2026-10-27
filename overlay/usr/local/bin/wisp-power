@@ -1,0 +1,16 @@
+#!/bin/sh
+# Wisp OS power menu
+lock() { i3lock -n -e -f -c 0d0f14 -i /usr/share/backgrounds/wisp/default.png; }
+
+choice=$1
+if [ -z "$choice" ]; then
+	choice=$(printf '%s\n' "Lock" "Log out" "Suspend" "Restart" "Shut down" |
+		rofi -dmenu -i -p "Power" -no-custom -theme-str 'window {width: 320px;} listview {lines: 5;} entry {placeholder: "";}')
+fi
+case "$choice" in
+	lock|Lock) lock ;;
+	"Log out") openbox --exit ;;
+	Suspend) lock & sleep 0.5; loginctl suspend ;;
+	Restart) loginctl reboot ;;
+	"Shut down") loginctl poweroff ;;
+esac

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=App Store
+Comment=Install apps and update your system
+Icon=system-software-install
+Exec=wisp-store
+Terminal=false
+Categories=System;
+Keywords=install;software;apps;update;packages;

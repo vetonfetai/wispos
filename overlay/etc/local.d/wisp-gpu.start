@@ -1,0 +1,32 @@
+#!/bin/sh
+# Choose how Xorg draws. With a real GPU driver it uses glamor (OpenGL) acceleration.
+# Without one (virtual machines, very old or unsupported chips) glamor would load the
+# software OpenGL stack (tens of MB of RAM) only to give up, so plain 2D drawing is used instead.
+conf=/etc/X11/xorg.conf.d/20-wisp-gpu.conf
+real=0
+any=0
+for card in /sys/class/drm/card[0-9]; do
+	[ -e "$card/device/driver" ] || continue
+	any=1
+	case "$(basename "$(readlink "$card/device/driver")")" in
+		i915|xe|amdgpu|radeon|nouveau) real=1 ;;
+	esac
+done
+if [ "$any" = 1 ] && [ "$real" = 0 ]; then
+	cat > "$conf" <<'CONF'
+# Written at boot by /etc/local.d/wisp-gpu.start: no hardware 3D, so skip glamor and
+# server-side GLX (both would only load the software OpenGL stack). Apps still get
+# OpenGL through EGL.
+Section "Module"
+	Disable "glx"
+EndSection
+
+Section "Device"
+	Identifier "wisp-gpu"
+	Driver "modesetting"
+	Option "AccelMethod" "none"
+EndSection
+CONF
+else
+	rm -f "$conf"
+fi

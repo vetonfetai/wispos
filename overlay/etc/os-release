@@ -1,0 +1,7 @@
+NAME="Wisp OS"
+PRETTY_NAME="Wisp OS @VERSION@"
+ID=wisp
+ID_LIKE=alpine
+VERSION_ID=@VERSION@
+HOME_URL="https://alpinelinux.org/"
+LOGO=wisp

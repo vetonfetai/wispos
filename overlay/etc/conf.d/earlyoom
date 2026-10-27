@@ -1,0 +1,8 @@
+# Wisp: step in before a low-memory PC freezes. Acts only when both free RAM and
+# free compressed swap are nearly gone, and closes a browser tab or app first,
+# never the desktop itself.
+mem_min_percent=4
+swap_min_percent=8
+set_priority=yes
+prefer_cmds="^(Web Content|Isolated Web Co|WebExtensions|chromium|chrome|electron)$"
+avoid_cmds="^(Xorg|openbox|tint2|picom|pipewire|wireplumber|pipewire-pulse|dbus-daemon|elogind|NetworkManager|udevd|init)$"

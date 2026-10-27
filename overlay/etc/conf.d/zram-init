@@ -1,0 +1,9 @@
+# Compressed swap in RAM: makes 1 GB machines feel like 1.5-2 GB.
+load_on_start=yes
+unload_on_stop=yes
+num_devices=1
+type0=swap
+flag0=
+size0=`LC_ALL=C free -m | awk '/^Mem:/{print int($2/2)}'`
+algo0=zstd
+labl0=zram_swap

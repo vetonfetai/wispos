@@ -1,0 +1,31 @@
+# Wisp OS boot menu
+title-text: ""
+desktop-image: "bg.png"
+desktop-color: "#0d0f14"
+
++ boot_menu {
+	left = 30%
+	top = 47%
+	width = 40%
+	height = 38%
+	item_color = "#b8bdd0"
+	selected_item_color = "#ffffff"
+	item_height = 36
+	item_padding = 14
+	item_spacing = 6
+	icon_width = 0
+	icon_height = 0
+	item_icon_space = 0
+	selected_item_pixmap_style = "sel_*.png"
+	scrollbar = false
+}
+
++ label {
+	id = "__timeout__"
+	left = 30%
+	top = 90%
+	width = 40%
+	align = "center"
+	color = "#6b7186"
+	text = "Starting in %d s  ·  ↑ ↓ to choose, Enter to start"
+}

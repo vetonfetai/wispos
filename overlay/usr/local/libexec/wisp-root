@@ -1,0 +1,41 @@
+#!/bin/sh
+# Privileged helper for the Wisp Settings and App Store apps.
+# Members of "wheel" may run it without a password (see /etc/doas.d/wisp.conf),
+# so it only accepts a few fixed actions with strictly validated arguments.
+set -eu
+[ "$(id -u)" = 0 ] || { echo "must run as root" >&2; exit 1; }
+
+valid_pkg() {
+	case "$1" in
+		''|-*|*[!a-zA-Z0-9._+-]*) echo "invalid package name: $1" >&2; exit 2 ;;
+	esac
+}
+
+action=${1:-}; [ $# -gt 0 ] && shift
+case "$action" in
+	apk-update) exec apk update ;;
+	apk-upgrade) apk update && exec apk upgrade --available ;;
+	apk-add|apk-del)
+		[ $# -gt 0 ] || exit 2
+		for p in "$@"; do valid_pkg "$p"; done
+		[ "$action" = apk-add ] && exec apk add "$@"
+		exec apk del "$@" ;;
+	timezone)
+		zone=${1:-}
+		case "$zone" in ''|*..*|/*|*[!a-zA-Z0-9/_+-]*) echo "invalid zone" >&2; exit 2 ;; esac
+		[ -f "/usr/share/zoneinfo/$zone" ] || { echo "unknown zone" >&2; exit 2; }
+		ln -sf "/usr/share/zoneinfo/$zone" /etc/localtime
+		echo "$zone" > /etc/timezone ;;
+	ntp)
+		case "${1:-}" in
+			on) rc-update add ntpd default >/dev/null && rc-service ntpd start ;;
+			off) rc-update del ntpd default >/dev/null; rc-service ntpd stop || true ;;
+			*) echo "usage: ntp on|off" >&2; exit 2 ;;
+		esac ;;
+	hostname)
+		name=${1:-}
+		case "$name" in ''|-*|*[!a-zA-Z0-9-]*) echo "invalid hostname" >&2; exit 2 ;; esac
+		echo "$name" > /etc/hostname
+		hostname "$name" ;;
+	*) echo "usage: wisp-root apk-update|apk-upgrade|apk-add PKG..|apk-del PKG..|timezone ZONE|ntp on|off|hostname NAME" >&2; exit 2 ;;
+esac

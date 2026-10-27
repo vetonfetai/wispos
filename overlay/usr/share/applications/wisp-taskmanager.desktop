@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Task Manager
+Comment=See what's running, how much memory it uses, and close stuck apps
+Icon=utilities-system-monitor
+Exec=wisp-taskmanager
+Terminal=false
+Categories=System;Monitor;
+Keywords=process;kill;memory;ram;cpu;performance;htop;

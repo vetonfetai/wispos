@@ -1,0 +1,6 @@
+#!/bin/sh
+# Serial login only when booted with "wisp.serial" (debug menu entry).
+if grep -qw wisp.serial /proc/cmdline; then
+	exec /sbin/agetty -L 115200 ttyS0 vt100
+fi
+exec sleep 2147483647

@@ -1,0 +1,137 @@
+#!/bin/sh
+# Wisp OS installer: copies the live system onto a disk.
+# Layout (GPT, boots on both BIOS and UEFI):
+#   1: 1 MiB   BIOS boot   2: 300 MiB EFI (FAT32)   3: rest  root (ext4)
+set -eu
+
+LIVE_RO=/run/wisp/ro
+T=/mnt/wisp-target
+
+c() { printf '\033[%sm%s\033[0m' "$1" "$2"; }
+say() { printf '\n%s %s\n' "$(c '1;35' '==>')" "$*"; }
+die() { printf '\n%s %s\n\nPress Enter to close.' "$(c '1;31' 'Error:')" "$*"; read -r _; exit 1; }
+ask() { printf '%s ' "$(c '1;36' "$1")"; read -r REPLY; }
+
+[ "$(id -u)" = 0 ] || exec doas "$0" "$@"
+on_exit() {
+	st=$?
+	[ $st = 0 ] && return
+	printf '\n%s the installer stopped (exit %s). Nothing after the failed step was done.\n\nPress Enter to close.' "$(c '1;31' 'Error:')" "$st"
+	read -r _
+}
+trap on_exit EXIT
+[ -d "$LIVE_RO/etc" ] || die "this only works from the Wisp OS live system."
+
+clear
+printf '\n  %s\n  %s\n' "$(c '1;34' 'Wisp OS installer')" "This will ERASE the disk you choose and install Wisp OS on it."
+
+say "Disks found:"
+lsblk -d -e 1,7,11 -o NAME,SIZE,MODEL,TRAN | grep -v '^zram' | sed 's/^/    /'
+LIVE_PART=$(awk '$2 == "/run/wisp/media" {print $1}' /proc/mounts)
+LIVE_DEV=
+if [ -n "$LIVE_PART" ]; then
+	LIVE_DEV=$(lsblk -no PKNAME "$LIVE_PART" 2>/dev/null | head -1)
+	[ -n "$LIVE_DEV" ] || LIVE_DEV=${LIVE_PART#/dev/}
+fi
+[ -n "$LIVE_DEV" ] && printf '    (%s is what Wisp OS is running from - do not pick it)\n' "$LIVE_DEV"
+
+ask "Install to which disk? (e.g. sda or nvme0n1):"
+DISK=${REPLY#/dev/}
+[ -n "$DISK" ] && [ -b "/dev/$DISK" ] || die "no such disk: $DISK"
+[ "$DISK" != "$LIVE_DEV" ] || die "that is the disk Wisp OS is running from."
+case "$DISK" in nvme*|mmcblk*|loop*) P="/dev/${DISK}p" ;; *) P="/dev/$DISK" ;; esac
+
+ask "Computer name [wisp]:"; HOST=${REPLY:-wisp}
+ask "Log in automatically at startup? [Y/n]:"; AUTOLOGIN=${REPLY:-y}
+while :; do
+	printf '%s ' "$(c '1;36' 'New password for user "wisp":')"; stty -echo; read -r PW1; stty echo; echo
+	printf '%s ' "$(c '1;36' 'Repeat password:')"; stty -echo; read -r PW2; stty echo; echo
+	[ -n "$PW1" ] && [ "$PW1" = "$PW2" ] && break
+	echo "Passwords empty or different, try again."
+done
+
+printf '\n  %s\n' "$(c '1;31' "ALL DATA ON /dev/$DISK WILL BE DESTROYED.")"
+lsblk "/dev/$DISK" | sed 's/^/    /'
+ask "Type the disk name ($DISK) to confirm:"
+[ "$REPLY" = "$DISK" ] || die "cancelled, nothing was changed."
+
+say "Partitioning /dev/$DISK"
+for part in $(lsblk -ln -o NAME "/dev/$DISK" | tail -n +2); do umount "/dev/$part" 2>/dev/null || true; done
+swapoff -a 2>/dev/null || true
+wipefs -a -q "/dev/$DISK"
+sfdisk -q "/dev/$DISK" <<EOF
+label: gpt
+size=1MiB, type=21686148-6449-6E6F-744E-656564454649, name=bios
+size=300MiB, type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B, name=efi
+type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name=wisp
+EOF
+mdev -s 2>/dev/null || true; udevadm settle 2>/dev/null || sleep 2
+
+say "Formatting"
+mkfs.vfat -F 32 -n WISPEFI "${P}2" >/dev/null
+mkfs.ext4 -q -F -L wisp "${P}3"
+
+say "Copying system files (a few minutes)..."
+modprobe -a ext4 vfat nls_cp437 nls_iso8859_1 2>/dev/null || true
+mkdir -p $T
+mount -t ext4 "${P}3" $T
+rsync -aHAX --info=progress2 --no-inc-recursive "$LIVE_RO/" $T/
+mkdir -p $T/boot/efi
+mount -t vfat "${P}2" $T/boot/efi
+
+say "Configuring"
+ROOT_UUID=$(blkid -s UUID -o value "${P}3")
+EFI_UUID=$(blkid -s UUID -o value "${P}2")
+cat > $T/etc/fstab <<EOF
+UUID=$ROOT_UUID	/		ext4	rw,relatime,commit=60	0 1
+UUID=$EFI_UUID	/boot/efi	vfat	rw,umask=0077	0 2
+tmpfs		/tmp		tmpfs	nosuid,nodev	0 0
+EOF
+echo "$HOST" > $T/etc/hostname
+sed -i "s/\bwisp\b/$HOST/g" $T/etc/hosts
+printf 'permit persist :wheel\npermit nopass :wheel cmd /usr/local/libexec/wisp-root\n' > $T/etc/doas.d/wisp.conf
+case "$AUTOLOGIN" in
+	n*|N*) sed -i 's#^tty1::respawn:.*#tty1::respawn:/sbin/agetty 38400 tty1 linux#' $T/etc/inittab ;;
+esac
+rm -f $T/usr/share/applications/wisp-install.desktop
+cat > $T/etc/mkinitfs/mkinitfs.conf <<EOF
+features="ata base ext4 keymap kms mmc nvme scsi usb virtio"
+EOF
+mkdir -p $T/etc/default
+cat > $T/etc/default/grub <<EOF
+GRUB_DISTRIBUTOR="Wisp OS"
+GRUB_TIMEOUT=1
+GRUB_DISABLE_SUBMENU=y
+GRUB_DISABLE_RECOVERY=true
+GRUB_DISABLE_OS_PROBER=false
+GRUB_CMDLINE_LINUX_DEFAULT="modules=ext4 rootfstype=ext4 quiet loglevel=3 console=tty3 vt.global_cursor_default=0"
+GRUB_TIMEOUT_STYLE=hidden
+EOF
+
+for d in proc sys dev run; do mkdir -p $T/$d; mount --rbind /$d $T/$d; done
+# busybox umount has no -R: unmount everything below $T, deepest first
+cleanup() {
+	grep -o " $T/[^ ]*" /proc/mounts | grep -v -e " $T/boot/efi$" | sort -r |
+		while read -r m; do umount -l "$m" 2>/dev/null || true; done
+}
+trap 'st=$?; cleanup; (exit $st); on_exit' EXIT
+
+printf 'wisp:%s\n' "$PW1" | chroot $T chpasswd
+KVER=$(ls $T/lib/modules | head -1)
+
+say "Installing bootloader"
+chroot $T mkinitfs -o /boot/initramfs-lts "$KVER" >/dev/null
+chroot $T grub-install --target=i386-pc "/dev/$DISK" >/dev/null 2>&1 || echo "  (BIOS boot loader skipped)"
+chroot $T grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable --no-nvram >/dev/null
+if [ -d /sys/firmware/efi ]; then
+	chroot $T grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id="Wisp OS" >/dev/null 2>&1 || true
+fi
+chroot $T grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1
+
+cleanup
+trap on_exit EXIT
+sync
+umount $T/boot/efi && umount $T
+
+printf '\n  %s\n  Remove the USB stick and restart.\n\nPress Enter to close.' "$(c '1;32' 'Wisp OS is installed!')"
+read -r _

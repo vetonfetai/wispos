@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome
+Comment=Get started with Wisp OS
+Icon=wisp
+Exec=wisp-welcome
+Terminal=false
+Categories=System;

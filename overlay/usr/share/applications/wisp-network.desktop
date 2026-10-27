@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Wi-Fi & Network
+Comment=Connect to Wi-Fi and manage connections
+Icon=network-wireless
+Exec=wisp-settings wifi
+Terminal=false
+Categories=Settings;Network;

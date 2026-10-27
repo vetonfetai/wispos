@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Screenshot
+Comment=Take a screenshot of an area (or press Print for the whole screen)
+Icon=applets-screenshooter
+Exec=wisp-screenshot area
+Terminal=false
+Categories=Utility;

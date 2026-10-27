@@ -1,0 +1,9 @@
+// Members of "wheel" may manage networks, disks and power without a password prompt.
+polkit.addRule(function (action, subject) {
+	if (!subject.isInGroup("wheel")) return;
+	if (action.id.indexOf("org.freedesktop.NetworkManager.") === 0 ||
+	    action.id.indexOf("org.freedesktop.udisks2.") === 0 ||
+	    action.id.indexOf("org.freedesktop.login1.") === 0) {
+		return polkit.Result.YES;
+	}
+});

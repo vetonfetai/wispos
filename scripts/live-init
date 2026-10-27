@@ -1,0 +1,81 @@
+#!/bin/sh
+# Wisp OS live initramfs: find the boot medium, mount the squashfs root,
+# put a RAM overlay on top and hand over to OpenRC.
+
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+/bin/busybox mkdir -p /usr/bin /usr/sbin /proc /sys /dev /run /newroot
+/bin/busybox --install -s
+
+mount -t proc -o nosuid,nodev,noexec proc /proc
+mount -t sysfs -o nosuid,nodev,noexec sysfs /sys
+mount -t devtmpfs -o mode=0755,nosuid devtmpfs /dev
+mount -t tmpfs -o mode=0755,nosuid,nodev run /run
+echo 0 > /proc/sys/kernel/printk
+
+LABEL=WISP_LIVE
+TORAM=no
+SHELL_FIRST=no
+for opt in $(cat /proc/cmdline); do
+	case "$opt" in
+		wisp.label=*) LABEL=${opt#wisp.label=} ;;
+		wisp.toram) TORAM=yes ;;
+		wisp.shell) SHELL_FIRST=yes ;;
+	esac
+done
+
+rescue() {
+	# boot messages may be on a hidden console (console=tty3): use the visible one
+	exec </dev/tty1 >/dev/tty1 2>&1
+	printf '\033[?25h'
+	echo "Wisp OS: $1"
+	echo "Dropping to a rescue shell. Type 'exit' to retry boot."
+	sh
+}
+
+[ "$SHELL_FIRST" = yes ] && rescue "debug shell requested"
+
+echo "Wisp OS: starting..."
+modprobe -a -q loop squashfs overlay isofs cdrom sr_mod sd_mod usb-storage uas \
+	xhci_pci ehci_pci ohci_pci uhci_hcd ahci ata_piix nvme virtio_pci virtio_blk virtio_scsi \
+	mmc_block sdhci_pci vfat nls_cp437 nls_iso8859_1 2>/dev/null
+
+M=/run/wisp
+mkdir -p $M/media $M/ro $M/rw
+found=
+i=0
+while [ $i -lt 40 ] && [ -z "$found" ]; do
+	# load drivers for whatever hardware has appeared (USB enumerates late)
+	find /sys/devices -name modalias -exec cat {} + 2>/dev/null | sort -u | xargs modprobe -a -q 2>/dev/null
+	for dev in $(blkid | grep "LABEL=\"$LABEL\"" | cut -d: -f1); do
+		if mount -o ro "$dev" $M/media 2>/dev/null; then
+			if [ -f $M/media/wisp/rootfs.sfs ]; then found=$dev; break; fi
+			umount $M/media
+		fi
+	done
+	[ -n "$found" ] || { sleep 0.5; i=$((i + 1)); }
+done
+[ -n "$found" ] || rescue "could not find boot media labelled $LABEL"
+
+SFS=$M/media/wisp/rootfs.sfs
+if [ "$TORAM" = yes ]; then
+	echo "Wisp OS: copying system to RAM..."
+	mkdir -p $M/ram
+	mount -t tmpfs -o size=100% ram $M/ram
+	cp $SFS $M/ram/rootfs.sfs && SFS=$M/ram/rootfs.sfs
+fi
+
+mount -t squashfs -o ro,loop $SFS $M/ro || rescue "could not mount $SFS"
+[ "$TORAM" = yes ] && umount $M/media
+
+mount -t tmpfs -o mode=0755,size=75% rw $M/rw
+mkdir -p $M/rw/upper $M/rw/work
+mount -t overlay -o lowerdir=$M/ro,upperdir=$M/rw/upper,workdir=$M/rw/work overlay /newroot \
+	|| rescue "could not mount overlay"
+
+mkdir -p /newroot/run /newroot/dev /newroot/proc /newroot/sys
+touch /newroot/etc/wisp-live
+mount --move /run /newroot/run
+mount --move /dev /newroot/dev
+umount /sys /proc
+
+exec switch_root /newroot /sbin/init

@@ -1,0 +1,15 @@
+#!/bin/sh
+# Runs after login: once a day, look for updates and show a notification if there are any.
+stamp=$HOME/.cache/wisp/update-check
+mkdir -p "${stamp%/*}"
+if [ -f "$stamp" ] && [ $(( $(date +%s) - $(stat -c %Y "$stamp") )) -lt 86400 ]; then
+	exit 0
+fi
+sleep 120
+doas -n /usr/local/libexec/wisp-root apk-update >/dev/null 2>&1 || exit 0
+touch "$stamp"
+n=$(apk version -l '<' 2>/dev/null | grep -vc '^Installed')
+[ "$n" -gt 0 ] || exit 0
+[ "$n" = 1 ] && what="1 update is" || what="$n updates are"
+notify-send -a Updates -i system-software-update "Updates available" \
+	"$what ready to install. Open Settings and go to Updates."

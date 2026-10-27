@@ -1,0 +1,15 @@
+#!/bin/sh
+# wisp-volume up|down|mute  - change volume and show a notification
+S=@DEFAULT_AUDIO_SINK@
+case "$1" in
+	up) wpctl set-mute $S 0; wpctl set-volume -l 1.0 $S 5%+ ;;
+	down) wpctl set-volume $S 5%- ;;
+	mute) wpctl set-mute $S toggle ;;
+esac
+out=$(wpctl get-volume $S 2>/dev/null) || exit 0
+vol=$(echo "$out" | awk '{printf "%d", $2 * 100}')
+case "$out" in
+	*MUTED*) icon=audio-volume-muted-symbolic; text="Muted" ;;
+	*) icon=audio-volume-high-symbolic; text="$vol%" ;;
+esac
+notify-send -a wisp-volume -i $icon -h string:x-dunst-stack-tag:volume -h int:value:$vol "Volume" "$text"

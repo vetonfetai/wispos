@@ -1,0 +1,16 @@
+#!/bin/sh
+# Toggle compositor effects (rounded corners, shadows, fades) and remember the choice.
+exec python3 - <<'PY'
+import sys
+sys.path.insert(0, "/usr/lib/wisp")
+import wispsession as ws
+from wisplib import load_settings, save_settings, spawn
+cp = load_settings()
+on = not cp["appearance"].getboolean("effects")
+cp["appearance"]["effects"] = "true" if on else "false"
+save_settings(cp)
+ws.apply_effects(cp)
+spawn(["notify-send", "-a", "wisp", "-i", "preferences-desktop-effects",
+       "Effects on" if on else "Effects off",
+       "Rounded corners and shadows." if on else "Lighter and faster."])
+PY

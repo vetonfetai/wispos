@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Settings
+Comment=Wi-Fi, display, sound, wallpaper, keyboard and more
+Icon=preferences-system
+Exec=wisp-settings
+Terminal=false
+Categories=Settings;
+Keywords=wifi;network;display;resolution;sound;volume;wallpaper;theme;keyboard;timezone;

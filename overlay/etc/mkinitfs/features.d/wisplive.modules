@@ -1,0 +1,8 @@
+kernel/fs/overlayfs
+kernel/fs/isofs
+kernel/fs/squashfs
+kernel/fs/fat
+kernel/fs/nls
+kernel/drivers/block/loop.ko*
+kernel/drivers/cdrom
+kernel/drivers/scsi/sr_mod.ko*

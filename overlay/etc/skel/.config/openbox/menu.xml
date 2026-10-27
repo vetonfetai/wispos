@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_menu xmlns="http://openbox.org/3.4/menu">
+  <menu id="root-menu" label="Wisp">
+    <item label="Apps"><action name="Execute"><command>rofi -show drun</command></action></item>
+    <separator/>
+    <item label="Terminal"><action name="Execute"><command>lxterminal</command></action></item>
+    <item label="Files"><action name="Execute"><command>pcmanfm</command></action></item>
+    <item label="Web Browser"><action name="Execute"><command>firefox</command></action></item>
+    <item label="Text Editor"><action name="Execute"><command>mousepad</command></action></item>
+    <separator/>
+    <item label="App Store"><action name="Execute"><command>wisp-store</command></action></item>
+    <item label="Settings"><action name="Execute"><command>wisp-settings</command></action></item>
+    <item label="Change Wallpaper"><action name="Execute"><command>wisp-settings appearance</command></action></item>
+    <item label="Task Manager"><action name="Execute"><command>wisp-taskmanager</command></action></item>
+    <item label="Toggle Effects"><action name="Execute"><command>wisp-effects</command></action></item>
+    <item label="Reload Desktop"><action name="Reconfigure"/></item>
+    <separator/>
+    <item label="Power…"><action name="Execute"><command>wisp-power</command></action></item>
+  </menu>
+</openbox_menu>

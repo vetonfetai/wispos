@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071019"/><stop offset=".55" stop-color="#0a1828"/><stop offset="1" stop-color="#0e1636"/>
+    </linearGradient>
+    <radialGradient id="ga" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#5fd4ff" stop-opacity=".5"/><stop offset="1" stop-color="#5fd4ff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gb" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#8a7dff" stop-opacity=".5"/><stop offset="1" stop-color="#8a7dff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="w" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5fd4ff" stop-opacity="0"/><stop offset=".45" stop-color="#5fd4ff" stop-opacity=".95"/><stop offset="1" stop-color="#8a7dff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="blur" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+    <filter id="soft" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="1.2"/></filter>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <ellipse cx="520" cy="360" rx="680" ry="440" fill="url(#gb)" opacity=".6"/>
+  <ellipse cx="1400" cy="780" rx="720" ry="400" fill="url(#ga)" opacity=".45"/>
+  <g fill="none" stroke="url(#w)" stroke-linecap="round">
+    <path d="M-40 300 C 420 360, 700 700, 1080 640 S 1620 860, 1980 820" stroke-width="12" filter="url(#blur)" opacity=".7"/>
+    <path d="M-40 300 C 420 360, 700 700, 1080 640 S 1620 860, 1980 820" stroke-width="2.2" filter="url(#soft)"/>
+    <path d="M-40 360 C 460 420, 740 760, 1120 700 S 1640 920, 1980 900" stroke-width="1.4" opacity=".55"/>
+    <path d="M-40 240 C 380 300, 660 640, 1040 580 S 1600 800, 1980 740" stroke-width="1" opacity=".35"/>
+  </g>
+</svg>
