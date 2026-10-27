@@ -554,14 +554,15 @@ VERSION="0.1"
         <h2>Try it on your own laptop tonight.</h2>
         <p class="lede">Run it live from a USB stick first. If you like it, install it from the desktop in a few minutes.</p>
         <div class="hero-ctas">
-          <a class="btn btn-primary" href="#download" id="dlBtn">Download ISO <small>v0.1 · x86_64 · 902 MB</small></a>
+          <a class="btn btn-primary" href="https://github.com/vetonfetai/wispos/releases/download/v0.1/wisp-os-0.1-x86_64.iso" id="dlBtn">Download ISO <small>v0.1 · x86_64 · 902 MB</small></a>
+          <a class="btn btn-ghost" href="https://github.com/vetonfetai/wispos">Source code</a>
         </div>
         <div class="req">
           <span>1 GB RAM</span><span>64-bit PC</span><span>8 GB disk</span><span>USB stick, 2 GB+</span>
         </div>
         <div class="hash">
           <span class="note">SHA-256</span>
-          <code>e454e69c9553aa8ef93c714e5be86b20fcf57f2b73d902ad88348482bc7687f2</code>
+          <code>e0c9b1328d4aae70042af8a5b045f68c0d8e8eeb682fe164911c654774837512</code>
         </div>
       </div>
       <ol class="steps">
@@ -577,7 +578,7 @@ VERSION="0.1"
 <footer>
   <div class="wrap">
     <a class="brand" href="#top"><img src="img/wisp.svg" alt="">Wisp OS</a>
-    <p>Free and open source. Built on Alpine Linux.</p>
+    <p>Built on Alpine Linux. <a href="https://github.com/vetonfetai/wispos">Code on GitHub</a></p>
     <p>Made for computers that still have plenty left to give.</p>
   </div>
 </footer>
@@ -658,13 +659,6 @@ VERSION="0.1"
   // Idle RAM figure breathes a little, like a live readout
   const rc = document.getElementById("ramCount");
   if (!reduce) setInterval(() => { rc.textContent = 165 + Math.floor(Math.random() * 5); }, 2200);
-
-  // Download button: no public release yet
-  document.getElementById("dlBtn").addEventListener("click", e => {
-    e.preventDefault();
-    const b = e.currentTarget;
-    b.firstChild.textContent = "Public download opens soon ";
-  });
 
   // The wisp trail
   const cv = document.getElementById("trail");
