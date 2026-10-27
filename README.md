@@ -24,10 +24,12 @@ Idle desktop in a 1 GB virtual machine, right after boot, with desktop icons, cl
 
 | What | RAM |
 |---|---|
-| `free -m` "used" (everything, including the kernel) | **~167 MB** |
-| Available for apps | **~643 MB** of 964 MB |
+| `free -m` "used" (everything, including the kernel) | **~178 MB** on a 1 GB PC, 250-350 MB on an 8 GB+ laptop |
+| Available for apps | **~641 MB** of 963 MB |
 
-Biggest users (private memory, live session in a VM): Xorg (29 MB), Wi-Fi icon (19 MB), desktop icons (17 MB), tint2 (15 MB), NetworkManager (8 MB), clock widget (6 MB), openbox (5 MB), sound (7 MB for PipeWire and WirePlumber).
+Biggest users (private memory, live session in a VM, Welcome app closed): Xorg (26 MB), Wi-Fi icon (10 MB), desktop icons (9 MB), tint2 (4 MB), clock widget (4 MB), openbox (3 MB), notifications (3 MB), sound (3 MB for PipeWire and WirePlumber), NetworkManager (2 MB). All programs together: about 72 MB. The rest is the kernel, shared libraries and buffers.
+
+On bigger machines the number goes up without Wisp doing more: the same VM with 8 GB and 8 CPUs shows about 240 MB, because the kernel sizes its caches and per-CPU lists by memory and core count. Real laptops also load a GPU driver (Intel/AMD graphics turn on Xorg's OpenGL acceleration) and Wi-Fi firmware, so 250-350 MB is normal on an 8-16 GB laptop.
 
 Memory savers: without a real GPU driver, Xorg skips glamor and server-side GLX (they would load the ~40 MB software OpenGL stack; see `/etc/local.d/wisp-gpu.start`); WirePlumber's camera monitors are off; the accessibility bus isn't started; unused kernel modules (KVM, PC speaker) are blacklisted; Firefox doesn't pre-launch a spare content process. `earlyoom` closes the biggest browser tab or app before a 1 GB machine can freeze.
 Real hardware with an Intel GPU should come in a bit lower, because the VM renders graphics in software.
