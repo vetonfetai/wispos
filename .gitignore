@@ -4,3 +4,7 @@ out-build.log
 .DS_Store
 __pycache__/
 *.pyc
+# never commit the private signing key
+*.rsa
+!keys/*.rsa.pub
+_site/

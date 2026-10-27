@@ -89,7 +89,7 @@ tmpfs		/tmp		tmpfs	nosuid,nodev	0 0
 EOF
 echo "$HOST" > $T/etc/hostname
 sed -i "s/\bwisp\b/$HOST/g" $T/etc/hosts
-printf 'permit persist :wheel\npermit nopass :wheel cmd /usr/local/libexec/wisp-root\n' > $T/etc/doas.d/wisp.conf
+printf 'permit persist :wheel\npermit nopass :wheel cmd /usr/libexec/wisp/wisp-root\n' > $T/etc/doas.d/wisp.conf
 case "$AUTOLOGIN" in
 	n*|N*) sed -i 's#^tty1::respawn:.*#tty1::respawn:/sbin/agetty 38400 tty1 linux#' $T/etc/inittab ;;
 esac

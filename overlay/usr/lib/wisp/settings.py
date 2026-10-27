@@ -1122,7 +1122,7 @@ class Settings(Gtk.Window):
     # ---------------- Updates ----------------
     def page_updates(self):
         box = page_box("Updates")
-        self.upd_status = label("Wisp OS keeps itself and your apps up to date through Alpine Linux's servers.",
+        self.upd_status = label("Updates for Wisp OS itself and for all your apps arrive here.",
                                 "wisp-muted", wrap=True)
         box.pack_start(self.upd_status, False, False, 0)
         btns = Gtk.Box(spacing=8)

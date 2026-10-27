@@ -4,7 +4,7 @@
 
 tty1::respawn:/bin/login -f wisp
 tty2::respawn:/sbin/agetty 38400 tty2 linux
-::respawn:/usr/local/sbin/wisp-serial-getty
+::respawn:/usr/sbin/wisp-serial-getty
 
 ::ctrlaltdel:/sbin/reboot
 ::shutdown:/sbin/openrc shutdown

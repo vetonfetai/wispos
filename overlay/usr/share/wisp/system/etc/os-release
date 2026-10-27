@@ -3,5 +3,5 @@ PRETTY_NAME="Wisp OS @VERSION@"
 ID=wisp
 ID_LIKE=alpine
 VERSION_ID=@VERSION@
-HOME_URL="https://alpinelinux.org/"
+HOME_URL="https://github.com/vetonfetai/wispos"
 LOGO=wisp

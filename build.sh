@@ -18,11 +18,17 @@ run() {
 		alpine:3.24 /bin/sh /src/scripts/build-in-container.sh "$@"
 }
 
-# 1. root filesystem (x86_64 packages) - skip with SKIP_ROOTFS=1 to only re-pack
-[ "${SKIP_ROOTFS:-0}" = 1 ] || run linux/amd64 rootfs
-# 2. compress natively on the build machine's own architecture (much faster)
+# 1. the signed wisp-desktop package (Wisp's own files) into out/repo;
+#    the private key lives outside the repo: WISP_KEYS (default ~/.config/wisp-keys)
+# 2. root filesystem: Alpine packages + wisp-desktop
+#    (skip both with SKIP_ROOTFS=1 to only re-pack)
+if [ "${SKIP_ROOTFS:-0}" != 1 ]; then
+	./scripts/build-package.sh "${WISP_KEYS:-$HOME/.config/wisp-keys}" out/repo
+	run linux/amd64 rootfs
+fi
+# 3. compress natively on the build machine's own architecture (much faster)
 run "linux/$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')" squash
-# 3. bootable ISO (x86 GRUB)
+# 4. bootable ISO (x86 GRUB)
 run linux/amd64 iso
 
 ls -lh out/*.iso

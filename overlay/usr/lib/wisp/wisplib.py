@@ -13,7 +13,7 @@ from gi.repository import GLib, Gtk, Gdk  # noqa: E402
 HOME = os.path.expanduser("~")
 CONF_DIR = os.path.join(HOME, ".config", "wisp")
 SETTINGS_FILE = os.path.join(CONF_DIR, "settings.ini")
-ROOT_HELPER = "/usr/local/libexec/wisp-root"
+ROOT_HELPER = "/usr/libexec/wisp/wisp-root"
 WALLPAPER_DIR = "/usr/share/backgrounds/wisp"
 IS_LIVE = os.path.exists("/etc/wisp-live")
 

@@ -1,0 +1,52 @@
+# Wisp OS desktop: Wisp's apps, themes, artwork and system settings.
+# Built by scripts/build-package.sh (locally and in GitHub Actions); never edited by hand
+# on a running system. Its dependencies are the whole Wisp package set, so adding a
+# package to packages.txt delivers it to every installed Wisp with the next update.
+# Maintainer: vetonfetai <vetonfetai@users.noreply.github.com>
+pkgname=wisp-desktop
+pkgver=${WISP_PKGVER:-0.1.0}
+pkgrel=0
+pkgdesc="Wisp OS desktop: apps, themes, artwork and settings"
+url="https://github.com/vetonfetai/wispos"
+arch="noarch"
+license="custom"
+_top="$startdir/../.."
+depends="$(sed -e 's/#.*//' -e '/^[[:space:]]*$/d' "$_top/packages.txt" | tr '\n' ' ')"
+makedepends="rsvg-convert imagemagick font-inter"
+install="$pkgname.post-install $pkgname.post-upgrade"
+triggers="$pkgname.trigger=/usr/share/applications"
+options="!check"
+source=""
+
+package() {
+	mkdir -p "$pkgdir"
+	cp -a "$_top/overlay/." "$pkgdir/"
+	find "$pkgdir" -name '__pycache__' -prune -exec rm -rf {} + -o -name '.DS_Store' -exec rm -f {} +
+	chmod 755 "$pkgdir"/usr/bin/wisp-* "$pkgdir"/usr/sbin/wisp-* "$pkgdir"/usr/libexec/wisp/* \
+		"$pkgdir"/etc/local.d/*.start "$pkgdir"/usr/lib/wisp/system-fixup
+	chmod 600 "$pkgdir"/etc/doas.d/wisp.conf
+
+	install -Dm644 "$_top/keys/wisp-os.rsa.pub" "$pkgdir/etc/apk/keys/wisp-os.rsa.pub"
+	sed -i "s/@VERSION@/$pkgver/g" "$pkgdir/usr/share/wisp/system/etc/os-release" \
+		"$pkgdir/usr/share/wisp/system/etc/issue"
+	cat > "$pkgdir/etc/wisp-release" <<-REL
+	WISP_VERSION=$pkgver
+	REL
+	# Per-user configs in /etc/skel are refreshed for existing users when this changes
+	echo "$pkgver" > "$pkgdir/usr/share/wisp/skel-version"
+	mkdir -p "$pkgdir/etc/skel/.config/wisp"
+	echo "$pkgver" > "$pkgdir/etc/skel/.config/wisp/skel-version"
+
+	# Artwork
+	local bg="$pkgdir/usr/share/backgrounds/wisp" svg name
+	mkdir -p "$bg" "$pkgdir/usr/share/icons/hicolor/scalable/apps"
+	for svg in "$_top"/art/wallpapers/*.svg; do
+		name=$(basename "$svg" .svg)
+		rsvg-convert -w 1920 -h 1080 "$svg" -o "$bg/$name.png"
+	done
+	ln -sf night.png "$bg/default.png"
+	cp "$_top/art/wisp.svg" "$_top/art/wisp-start.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/"
+	rsvg-convert "$_top/art/splash.svg" -o "$srcdir/splash.png"
+	magick "$srcdir/splash.png" "$pkgdir/usr/share/wisp/splash.ppm"
+	magick identify -format '%w %h\n' "$srcdir/splash.png" > "$pkgdir/usr/share/wisp/splash.size"
+}

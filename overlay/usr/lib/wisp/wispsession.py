@@ -1,4 +1,5 @@
 """Applies Wisp settings to the running desktop. Used at login and by Settings."""
+import filecmp
 import os
 import re
 import shutil
@@ -19,6 +20,14 @@ TINT2RC = os.path.join(CONFIG, "tint2", "tint2rc")
 CONKY_CONF = os.path.join(CONFIG, "conky", "wisp.conf")
 DUNSTRC = os.path.join(CONFIG, "dunst", "dunstrc")
 PANEL_HEIGHT = 44
+SKEL_VERSION = "/usr/share/wisp/skel-version"
+# Desktop configs that Wisp owns. After an update they're refreshed from /etc/skel;
+# the user's choices live in settings.ini and are applied on top at every login.
+MANAGED_CONFIGS = [
+    ".xinitrc", ".config/openbox/rc.xml", ".config/openbox/menu.xml", ".config/openbox/autostart",
+    ".config/openbox/environment", ".config/tint2/tint2rc", ".config/conky/wisp.conf",
+    ".config/dunst/dunstrc", ".config/picom/picom.conf", ".config/rofi/config.rasi",
+]
 
 
 def _write(path, text):
@@ -320,7 +329,33 @@ def make_desktop_shortcuts():
     open(flag, "w").close()
 
 
+def migrate_user_config():
+    """Bring this user's desktop configs up to date after a Wisp update.
+    Returns the new version if anything was refreshed, else None."""
+    new = (_read(SKEL_VERSION) or "").strip()
+    mine_path = os.path.join(CONF_DIR, "skel-version")
+    mine = (_read(mine_path) or "").strip()
+    if not new or new == mine:
+        return None
+    backup = os.path.join(CONF_DIR, "backup-before-update")
+    shutil.rmtree(backup, ignore_errors=True)
+    for rel in MANAGED_CONFIGS:
+        src, dst = os.path.join("/etc/skel", rel), os.path.join(HOME, rel)
+        if not os.path.exists(src):
+            continue
+        if os.path.exists(dst):
+            if filecmp.cmp(src, dst, shallow=False):
+                continue
+            os.makedirs(os.path.dirname(os.path.join(backup, rel)), exist_ok=True)
+            shutil.copy2(dst, os.path.join(backup, rel))
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copy2(src, dst)
+    _write(mine_path, new + "\n")
+    return new if mine else None
+
+
 def start_session():
+    updated = migrate_user_config()
     cp = load_settings()
     apply_theme(cp, live=False)
     apply_desktop(cp, live=False)
@@ -345,6 +380,9 @@ def start_session():
         apply_dnd(cp)
     if cp["welcome"].getboolean("show"):
         spawn(["wisp-welcome"])
+    if updated:
+        spawn(["notify-send", "-a", "Wisp OS", "-i", "wisp", "Wisp OS was updated",
+               f"You're now on version {updated}. Your settings were kept."])
     if cp["updates"].getboolean("notify") and not IS_LIVE:
         spawn(["wisp-update-check"])
 

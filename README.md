@@ -43,6 +43,35 @@ The first build downloads about 800 MB of packages and takes roughly 30-40 minut
 
 The output is `out/wisp-os-0.1-x86_64.iso`: a hybrid BIOS + UEFI image that boots from a USB stick or a DVD.
 
+The build needs the private signing key at `~/.config/wisp-keys/wisp-os.rsa` (or set `WISP_KEYS` to its folder). See below.
+
+## Updates: how installed Wisp systems get your changes
+
+Everything Wisp adds to Alpine (`overlay/`, the artwork, and the list in `packages.txt`) is packaged as **`wisp-desktop`**, a signed Alpine package. The ISO is built from that same package, and every Wisp system checks the Wisp package repository alongside Alpine's.
+
+**To ship an update:** commit and push to `main`. GitHub Actions (`.github/workflows/publish.yml`) then:
+1. builds `wisp-desktop` with version `0.1.<number of commits>` and signs it,
+2. publishes it with the landing page on GitHub Pages:
+   - https://vetonfetai.github.io/wispos/ is the landing page
+   - https://vetonfetai.github.io/wispos/repo/ is the package repository
+
+Installed systems then pick it up from Settings > Updates or App Store > Updates (and a daily "Updates available" notification), together with Alpine's own updates.
+
+What an update does on each computer:
+- replaces Wisp's apps, themes, artwork and system files, and installs any new packages added to `packages.txt` (they're dependencies of `wisp-desktop`)
+- runs `/usr/lib/wisp/system-fixup` (services, launcher names, files that belong to other Alpine packages such as `/etc/inittab`)
+- at each user's next login, refreshes Wisp's desktop configs from `/etc/skel` (old copies go to `~/.config/wisp/backup-before-update`), re-applies their Settings choices on top, and shows "Wisp OS was updated"
+
+Files that should only be set on a fresh install (hostname, hosts) live in `image/`, not in the package.
+
+**One-time setup on GitHub** (already done if the Actions tab shows green runs):
+1. Settings > Secrets and variables > Actions > New repository secret: name `WISP_SIGNING_KEY`, value = the whole content of `~/.config/wisp-keys/wisp-os.rsa`.
+2. Settings > Pages > Build and deployment > Source: **GitHub Actions**.
+
+**Keep a backup of `wisp-os.rsa`** somewhere safe (a password manager works). Every Wisp system trusts only that key. If it's lost, existing installs can't verify new updates; if it leaks, someone else could sign updates. It's never committed (see `.gitignore`); only the public half `keys/wisp-os.rsa.pub` is in the repo.
+
+To build just the package locally: `scripts/build-package.sh ~/.config/wisp-keys out/repo`.
+
 ## Try it without touching your computer
 
 On your Mac, in a virtual machine:
@@ -98,16 +127,25 @@ Right-click the desktop for the main menu (it includes **Toggle Effects**, which
 
 ```
 build.sh                      host entry point (runs Docker)
-packages.txt                  everything that goes into the OS
-scripts/build-in-container.sh builds rootfs → squashfs → ISO
+packages.txt                  everything that goes into the OS (dependencies of wisp-desktop)
+VERSION                       base version; packages are VERSION.<commit count>
+pkg/wisp-desktop/             APKBUILD and install hooks for the wisp-desktop package
+keys/wisp-os.rsa.pub          public key that installed systems use to verify updates
+scripts/build-package.sh      builds and signs wisp-desktop + repository index
+scripts/build-in-container.sh builds rootfs (from wisp-desktop) → squashfs → ISO
+.github/workflows/publish.yml publishes package + landing page to GitHub Pages on every push
+image/                        files only for a fresh install (hostname, hosts)
+site/                         landing page
 scripts/live-init             live-boot initramfs (finds USB, overlay in RAM)
 scripts/grub.cfg              boot menu
-overlay/                      files copied over the root filesystem
+overlay/                      the contents of the wisp-desktop package
   etc/skel/.config/...        default desktop config (openbox, tint2, rofi, picom, dunst, gtk)
   usr/share/themes/Wisp/      Openbox window theme
   usr/lib/wisp/               Settings, App Store, Welcome, Task Manager and the session starter (Python + GTK3)
-  usr/local/bin/wisp-*        installer, power menu, volume, screenshot, effects, weather
-  usr/local/libexec/wisp-root the only admin helper the apps may run (installs, updates, time zone)
+  usr/lib/wisp/system-fixup   system tweaks re-applied after every install/update
+  usr/share/wisp/system/      files owned by other Alpine packages, copied over them by system-fixup
+  usr/bin/wisp-*              installer, power menu, volume, screenshot, effects, weather, update check
+  usr/libexec/wisp/wisp-root  the only admin helper the apps may run (installs, updates, time zone)
 art/                          wallpapers, logo, boot splash (SVG, rendered at build time)
 test/run-vm.sh                QEMU test runner
 ```

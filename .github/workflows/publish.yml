@@ -1,0 +1,63 @@
+# On every push to main: build and sign the wisp-desktop package, then publish it
+# together with the landing page to GitHub Pages:
+#   https://vetonfetai.github.io/wispos/        landing page
+#   https://vetonfetai.github.io/wispos/repo/   package repository (installed Wisp systems read this)
+# Needs the repository secret WISP_SIGNING_KEY (contents of wisp-os.rsa) and
+# Settings > Pages > Source set to "GitHub Actions".
+name: Publish updates
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # the version number is the commit count
+
+      - name: Build and sign wisp-desktop
+        env:
+          WISP_SIGNING_KEY: ${{ secrets.WISP_SIGNING_KEY }}
+        run: |
+          if [ -z "$WISP_SIGNING_KEY" ]; then
+            echo "::error::Add the WISP_SIGNING_KEY secret (Settings > Secrets and variables > Actions)"
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/keys"
+          printf '%s\n' "$WISP_SIGNING_KEY" > "$RUNNER_TEMP/keys/wisp-os.rsa"
+          chmod 600 "$RUNNER_TEMP/keys/wisp-os.rsa"
+          ./scripts/build-package.sh "$RUNNER_TEMP/keys" _site/repo
+          rm -rf "$RUNNER_TEMP/keys"
+
+      - name: Add the landing page
+        run: |
+          cp -r site/img _site/
+          { echo '<!doctype html>'; echo '<html lang="en">'; cat site/index.html; } > _site/index.html
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

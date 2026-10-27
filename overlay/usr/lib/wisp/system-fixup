@@ -1,0 +1,62 @@
+#!/bin/sh
+# Applies Wisp's system-wide tweaks. Run by the wisp-desktop package after it is
+# installed or upgraded ("all"), and by its trigger whenever another package
+# changes the app launcher entries ("desktop").
+set -u
+
+# Files that belong to other Alpine packages (inittab, os-release, ...) are shipped in
+# /usr/share/wisp/system and copied over the originals here.
+system_files() {
+	cp -a /usr/share/wisp/system/etc/. /etc/
+}
+
+services() {
+	add() { lvl=$1; shift; for s in "$@"; do
+		[ -e "/etc/init.d/$s" ] && rc-update add "$s" "$lvl" >/dev/null 2>&1
+	done; }
+	add sysinit devfs dmesg udev udev-trigger wisp-splash
+	add boot modules sysctl hostname bootmisc hwclock zram-init
+	add default dbus elogind polkit networkmanager udisks2 ntpd earlyoom local
+	add shutdown mount-ro killprocs savecache
+	return 0
+}
+
+# Hide developer/duplicate entries from the app launcher and give apps plain names.
+desktop_entries() {
+	dir=/usr/share/applications
+	for d in xfce4-about rofi-theme-selector tint2conf lxshortcut libfm-pref-apps pcmanfm-desktop-pref \
+		gcr-prompter gcr-viewer org.gnome.OnlineAccounts.OAuth2 org.gnome.goa-daemon picom compton \
+		org.xfce.mousepad-settings openbox rofi feh nm-applet conky nm-connection-editor xsettingsd htop; do
+		f=$dir/$d.desktop
+		[ -f "$f" ] && ! grep -q '^NoDisplay=true' "$f" && echo 'NoDisplay=true' >> "$f"
+	done
+	while IFS='|' read -r id name; do
+		f=$dir/$id.desktop
+		[ -f "$f" ] && sed -i "s/^Name=.*/Name=$name/" "$f"
+	done <<-NAMES
+	pcmanfm|Files
+	lxterminal|Terminal
+	gpicview|Image Viewer
+	galculator|Calculator
+	org.xfce.mousepad|Text Editor
+	mpv|Media Player
+	atril|Document Viewer
+	xarchiver|Archives
+	org.pulseaudio.pavucontrol|Sound Mixer
+	NAMES
+	rm -f /etc/xdg/autostart/picom.desktop /etc/xdg/autostart/compton.desktop
+	update-desktop-database -q "$dir" 2>/dev/null || true
+}
+
+case "${1:-all}" in
+	all)
+		system_files
+		services
+		desktop_entries
+		gtk-update-icon-cache -q -f /usr/share/icons/hicolor 2>/dev/null || true
+		python3 -m compileall -q /usr/lib/wisp >/dev/null 2>&1 || true
+		;;
+	desktop) desktop_entries ;;
+	*) echo "usage: system-fixup [all|desktop]" >&2; exit 2 ;;
+esac
+exit 0
